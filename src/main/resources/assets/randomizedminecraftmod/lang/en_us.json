@@ -1,5 +1,7 @@
 {
-    "item.randomizedminecraftmod.random_day_or_night": "Random Day Or Night",
+  "item.randomizedminecraftmod.random_day_or_night": "Random Day Or Night",
 
-    "item_group.randomizedminecraftmod.randomizedminecraftmod": "Randomized Minecraft"
+  "item_group.randomizedminecraftmod.randomizedminecraftmod": "Randomized Minecraft",
+
+  "message.randomizedminecraftmod.increase_currency": "Currency increased!"
 }

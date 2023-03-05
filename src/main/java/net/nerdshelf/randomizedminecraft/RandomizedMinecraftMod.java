@@ -16,6 +16,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
+import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(RandomizedMinecraftMod.MOD_ID)
@@ -43,6 +44,8 @@ public class RandomizedMinecraftMod {
 		// Some common setup code
 		LOGGER.info("HELLO FROM COMMON SETUP");
 		LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
+
+		ModMessages.register();
 	}
 
 	// You can use EventBusSubscriber to automatically register all static methods
