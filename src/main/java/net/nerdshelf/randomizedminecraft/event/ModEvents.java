@@ -1,5 +1,6 @@
 package net.nerdshelf.randomizedminecraft.event;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -270,6 +271,10 @@ public class ModEvents {
 
 			if (event.getEntity() instanceof Zombie) {
 				if (event.getSource().getEntity() instanceof Player) {
+					// Show how much currency the player as gained by setting the mob name to the
+					// gained currency
+					event.getEntity().setCustomName(Component.literal("+" + x).withStyle(ChatFormatting.YELLOW));
+					// Handle the currency increase
 					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
 					return;
 				}
