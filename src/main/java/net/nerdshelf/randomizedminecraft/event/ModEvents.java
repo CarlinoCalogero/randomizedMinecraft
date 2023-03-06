@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Drowned;
@@ -82,6 +83,20 @@ public class ModEvents {
 
 		}
 
+		/***
+		 * Increases player currency by x value when a certain entity is killed
+		 * 
+		 * @param x
+		 * @param entity
+		 */
+		private static void handleMobKill(int x, LivingEntity entity) {
+			// Show how much currency the player as gained by setting the mob name to the
+			// gained currency
+			entity.setCustomName(Component.literal("+" + x).withStyle(ChatFormatting.YELLOW));
+			// Handle the currency increase
+			ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+		}
+
 		@SubscribeEvent
 		public static void onLivingDeath(LivingDeathEvent event) {
 
@@ -89,200 +104,196 @@ public class ModEvents {
 
 			if (event.getEntity() instanceof Blaze) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(4 * x));
+					handleMobKill(4 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Creeper) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(2 * x));
+					handleMobKill(2 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Drowned) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) (1.5 * x)));
+					handleMobKill((int) (1.5 * x), event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof ElderGuardian) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(6 * x));
+					handleMobKill(6 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Endermite) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Evoker) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(6 * x));
+					handleMobKill(6 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Ghast) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Guardian) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(4 * x));
+					handleMobKill(4 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Hoglin) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Husk) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof MagmaCube) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Phantom) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) (1.5 * x)));
+					handleMobKill((int) (1.5 * x), event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof PiglinBrute) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(2 * x));
+					handleMobKill(2 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Pillager) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) (1.5 * x)));
+					handleMobKill((int) (1.5 * x), event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Ravager) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Shulker) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Silverfish) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Skeleton) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) (1.5 * x)));
+					handleMobKill((int) (1.5 * x), event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Slime) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Stray) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) (1.5 * x)));
+					handleMobKill((int) (1.5 * x), event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Vex) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Vindicator) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Warden) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(100 * x));
+					handleMobKill(100 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Witch) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(4 * x));
+					handleMobKill(4 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof WitherSkeleton) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Zoglin) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(3 * x));
+					handleMobKill(3 * x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof Zombie) {
 				if (event.getSource().getEntity() instanceof Player) {
-					// Show how much currency the player as gained by setting the mob name to the
-					// gained currency
-					event.getEntity().setCustomName(Component.literal("+" + x).withStyle(ChatFormatting.YELLOW));
-					// Handle the currency increase
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
 
 			if (event.getEntity() instanceof ZombieVillager) {
 				if (event.getSource().getEntity() instanceof Player) {
-					ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
+					handleMobKill(x, event.getEntity());
 					return;
 				}
 			}
