@@ -1,5 +1,8 @@
 package net.nerdshelf.randomizedminecraft.event;
 
+import java.util.List;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,21 +36,28 @@ import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
+import net.nerdshelf.randomizedminecraft.block.ModBlocks;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrency;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrencyProvider;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
+import net.nerdshelf.randomizedminecraft.villager.ModVillagers;
 
 public class ModEvents {
 
@@ -80,6 +90,39 @@ public class ModEvents {
 		public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
 
 			event.register(PlayerCurrency.class);
+
+		}
+
+		/***
+		 * Changes villagers' trades
+		 * 
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void addCustomTrades(VillagerTradesEvent event) {
+
+			// Add trades to toolsmith villager
+			if (event.getType() == VillagerProfession.TOOLSMITH) {
+				Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
+				ItemStack stack = new ItemStack(ModItems.RANDOM_DAY_OR_NIGHT.get(), 1);
+				int villagerLevel = 1;
+
+				trades.get(villagerLevel)
+						.add((trader, rand) -> new MerchantOffer(new ItemStack(Items.EMERALD, 2), stack, 10, 8, 0.02F));
+			}
+
+			// Add trades to jumpy master villager
+			if (event.getType() == ModVillagers.JUMP_MASTER.get()) {
+				Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
+				ItemStack stack = new ItemStack(ModBlocks.ZIRCON_BLOCK.get(), 15);
+				int villagerLevel = 1;
+
+				trades.get(villagerLevel)
+						.add((trader, rand) -> new MerchantOffer(new ItemStack(Items.EMERALD, 5), stack, 10, 8, 0.02F));
+
+				trades.get(2).add((trader, rand) -> new MerchantOffer(new ItemStack(Items.GOLD_INGOT, 10),
+						new ItemStack(ModBlocks.JUMPY_BLOCK.get(), 1), 10, 8, 0.02F));
+			}
 
 		}
 
@@ -318,6 +361,8 @@ public class ModEvents {
 							// Add default items to tab
 							.displayItems((enabledFlags, populator, hasPermissions) -> {
 								populator.accept(ModItems.RANDOM_DAY_OR_NIGHT.get());
+								populator.accept(ModBlocks.ZIRCON_BLOCK.get());
+								populator.accept(ModBlocks.JUMPY_BLOCK.get());
 							}));
 		}
 

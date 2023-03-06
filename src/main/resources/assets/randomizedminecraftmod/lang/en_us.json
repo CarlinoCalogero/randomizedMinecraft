@@ -1,6 +1,11 @@
 {
   "item.randomizedminecraftmod.random_day_or_night": "Random Day Or Night",
 
+  "block.randomizedminecraftmod.zircon_block": "Block of Zircon",
+  "block.randomizedminecraftmod.jumpy_block": "Jumpy Block",
+
+  "entity.minecraft.villager.randomizedminecraftmod.jumpy_master": "Jumpy Master",
+
   "item_group.randomizedminecraftmod.randomizedminecraftmod": "Randomized Minecraft",
 
   "message.randomizedminecraftmod.increase_currency": "Currency increased!"

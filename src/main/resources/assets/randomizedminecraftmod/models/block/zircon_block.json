@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "randomizedminecraftmod:block/zircon_block"
+    }
+}
