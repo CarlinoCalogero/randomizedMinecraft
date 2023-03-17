@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.Creeper;
@@ -45,8 +46,10 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -124,6 +127,50 @@ public class ModEvents {
 						new ItemStack(ModBlocks.JUMPY_BLOCK.get(), 1), 10, 8, 0.02F));
 			}
 
+		}
+
+		/***
+		 * Prevents experience orbs from spawning
+		 * 
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void handleAddExperienceOrb(EntityJoinLevelEvent event) {
+			Entity entity = event.getEntity();
+
+			if (entity instanceof ExperienceOrb) {
+				event.setCanceled(true);
+			}
+		}
+
+		/***
+		 * Prevents player from levelling up
+		 * 
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void giveExperienceLevels(PlayerXpEvent event) {
+			event.setCanceled(true);
+		}
+
+		/***
+		 * Prevents player from picking up experience orb
+		 * 
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void playerTouch(PlayerXpEvent event) {
+			event.setCanceled(true);
+		}
+
+		/***
+		 * Prevents player from getting experience point
+		 * 
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void giveExperiencePoints(PlayerXpEvent event) {
+			event.setCanceled(true);
 		}
 
 		/***
