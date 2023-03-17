@@ -80,7 +80,6 @@ public class ModEvents {
 		public static void onWorldJoin(EntityJoinLevelEvent event) {
 			if (!event.getLevel().isClientSide() && event.getEntity() instanceof Player player) {
 
-				player.sendSystemMessage(Component.literal("Miao"));
 				ObfuscationReflectionHelper.setPrivateValue(Player.class, player, new CustomFoodStats(), "foodData");
 
 			}

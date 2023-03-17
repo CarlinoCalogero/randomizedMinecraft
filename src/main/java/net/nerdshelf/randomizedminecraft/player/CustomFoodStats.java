@@ -4,7 +4,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
-import net.minecraft.world.level.GameRules;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 public class CustomFoodStats extends FoodData {
@@ -16,11 +15,10 @@ public class CustomFoodStats extends FoodData {
 		float saturationLevel = getSaturationLevel();
 		float exhaustionLevel = getExhaustionLevel();
 		int tickTimer = ObfuscationReflectionHelper.getPrivateValue(FoodData.class, player.getFoodData(), "tickTimer");
-		int lastFoodLevel = getLastFoodLevel();
 
-		System.out.println("\n\n\nOVERRIDDEN" + "\nFoodLevel: " + foodLevel + "\nFoodSaturationLevel: "
-				+ saturationLevel + "\nExhaustionLevel: " + exhaustionLevel + "\nTickTimer:  " + tickTimer
-				+ "\nLastFoodLevel: " + lastFoodLevel + "\n\n\n");
+//		System.out.println("\n\n\nOVERRIDDEN" + "\nFoodLevel: " + foodLevel + "\nFoodSaturationLevel: "
+//				+ saturationLevel + "\nExhaustionLevel: " + exhaustionLevel + "\nTickTimer:  " + tickTimer
+//				+ "\nLastFoodLevel: " + getLastFoodLevel() + "\n\n\n");
 
 		Difficulty difficulty = player.level.getDifficulty();
 		ObfuscationReflectionHelper.setPrivateValue(FoodData.class, player.getFoodData(), foodLevel, "lastFoodLevel");
@@ -33,23 +31,20 @@ public class CustomFoodStats extends FoodData {
 			}
 		}
 
-		boolean flag = player.level.getGameRules().getBoolean(GameRules.RULE_NATURAL_REGENERATION);
-		if (flag && saturationLevel > 0.0F && player.isHurt() && foodLevel >= 20) {
+		if (saturationLevel > 0.0F && player.isHurt() && foodLevel >= 20) {
 			ObfuscationReflectionHelper.setPrivateValue(FoodData.class, player.getFoodData(), ++tickTimer, "tickTimer");
 			tickTimer = ObfuscationReflectionHelper.getPrivateValue(FoodData.class, player.getFoodData(), "tickTimer");
 			if (tickTimer >= 10) {
 				float f = Math.min(saturationLevel, 6.0F);
-				player.heal(f / 6.0F);
 				addExhaustion(f);
 				ObfuscationReflectionHelper.setPrivateValue(FoodData.class, player.getFoodData(), 0, "tickTimer");
 				tickTimer = ObfuscationReflectionHelper.getPrivateValue(FoodData.class, player.getFoodData(),
 						"tickTimer");
 			}
-		} else if (flag && foodLevel >= 18 && player.isHurt()) {
+		} else if (foodLevel >= 18 && player.isHurt()) {
 			ObfuscationReflectionHelper.setPrivateValue(FoodData.class, player.getFoodData(), ++tickTimer, "tickTimer");
 			tickTimer = ObfuscationReflectionHelper.getPrivateValue(FoodData.class, player.getFoodData(), "tickTimer");
 			if (tickTimer >= 80) {
-				player.heal(1.0F);
 				addExhaustion(6.0F);
 				ObfuscationReflectionHelper.setPrivateValue(FoodData.class, player.getFoodData(), 0, "tickTimer");
 				tickTimer = ObfuscationReflectionHelper.getPrivateValue(FoodData.class, player.getFoodData(),
