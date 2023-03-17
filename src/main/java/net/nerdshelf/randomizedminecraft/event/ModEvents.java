@@ -53,6 +53,7 @@ import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
 import net.nerdshelf.randomizedminecraft.block.ModBlocks;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrency;
@@ -60,12 +61,30 @@ import net.nerdshelf.randomizedminecraft.currency.PlayerCurrencyProvider;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
+import net.nerdshelf.randomizedminecraft.player.CustomFoodStats;
 import net.nerdshelf.randomizedminecraft.villager.ModVillagers;
 
 public class ModEvents {
 
 	@Mod.EventBusSubscriber(modid = RandomizedMinecraftMod.MOD_ID)
 	public static class ForgeEvents {
+
+		/**
+		 * Used to override player fields
+		 * 
+		 *
+		 * @see EntityJoinLevelEvent
+		 * @param event The data for the {@link EntityJoinLevelEvent} event
+		 */
+		@SubscribeEvent
+		public static void onWorldJoin(EntityJoinLevelEvent event) {
+			if (!event.getLevel().isClientSide() && event.getEntity() instanceof Player player) {
+
+				player.sendSystemMessage(Component.literal("Miao"));
+				ObfuscationReflectionHelper.setPrivateValue(Player.class, player, new CustomFoodStats(), "foodData");
+
+			}
+		}
 
 		@SubscribeEvent
 		public static void onAttachCapabilitiesPlayer(AttachCapabilitiesEvent<Entity> event) {
