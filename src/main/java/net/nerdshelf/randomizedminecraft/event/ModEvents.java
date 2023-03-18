@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,6 +61,7 @@ import net.nerdshelf.randomizedminecraft.currency.PlayerCurrency;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrencyProvider;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
+import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyDataSyncS2CPacket;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
 import net.nerdshelf.randomizedminecraft.player.CustomFoodStats;
 import net.nerdshelf.randomizedminecraft.villager.ModVillagers;
@@ -112,6 +114,17 @@ public class ModEvents {
 
 			event.register(PlayerCurrency.class);
 
+		}
+		
+		@SubscribeEvent
+		public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
+			if(!event.getLevel().isClientSide()) {
+	            if(event.getEntity() instanceof ServerPlayer player) {
+	                player.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+						ModMessages.sendToPlayer(new CurrencyDataSyncS2CPacket(currency.getCurrency()), player);
+	                });
+	            }
+	        }
 		}
 
 		/***

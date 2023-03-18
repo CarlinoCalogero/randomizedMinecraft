@@ -7,6 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
+import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyDataSyncS2CPacket;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
 
 public class ModMessages {
@@ -26,8 +27,13 @@ public class ModMessages {
 
 		INSTANCE = net;
 
-		net.messageBuilder(CurrencyManagementC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER).decoder(CurrencyManagementC2SPacket::new)
-				.encoder(CurrencyManagementC2SPacket::toBytes).consumerMainThread(CurrencyManagementC2SPacket::handle).add();
+		net.messageBuilder(CurrencyManagementC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+				.decoder(CurrencyManagementC2SPacket::new).encoder(CurrencyManagementC2SPacket::toBytes)
+				.consumerMainThread(CurrencyManagementC2SPacket::handle).add();
+
+		net.messageBuilder(CurrencyDataSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+				.decoder(CurrencyDataSyncS2CPacket::new).encoder(CurrencyDataSyncS2CPacket::toBytes)
+				.consumerMainThread(CurrencyDataSyncS2CPacket::handle).add();
 
 	}
 

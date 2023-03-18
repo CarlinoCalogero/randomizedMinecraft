@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrencyProvider;
+import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 
 public class CurrencyManagementC2SPacket {
 
@@ -43,6 +44,9 @@ public class CurrencyManagementC2SPacket {
 				currency.addCurrency(CurrencyManagementC2SPacket.AMOUNT);
 				player.sendSystemMessage(Component.literal("Current Currency: " + currency.getCurrency())
 						.withStyle(ChatFormatting.YELLOW));
+
+				// Sync currency data between server and client
+				ModMessages.sendToPlayer(new CurrencyDataSyncS2CPacket(currency.getCurrency()), player);
 			});
 
 			// Output the current currency
