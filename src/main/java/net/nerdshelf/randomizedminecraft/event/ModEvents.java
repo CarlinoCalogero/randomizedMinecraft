@@ -101,11 +101,35 @@ public class ModEvents {
 		@SubscribeEvent
 		public static void onPlayerCloned(PlayerEvent.Clone event) {
 			if (event.isWasDeath()) {
+
+				/***
+				 * `event.getOriginal()` gets the data of the player entity before dying, but
+				 * `invalidateCaps()` (which deletes all capabilities) is called when the player
+				 * dies. So if we don't call `event.getOriginal().reviveCaps()` before accessing
+				 * the player's capabilities we get `null`. ReviveCaps gets the old values of
+				 * the capabilities registered with the player entity. At the same time we
+				 * should call `event.getOriginal().invalidateCaps()` after accessing the old
+				 * values of the capabilities to invalidate the old capabilities and use the new
+				 * ones.
+				 */
+				event.getOriginal().reviveCaps();
 				event.getOriginal().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(oldStore -> {
-					event.getOriginal().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(newStore -> {
+					/***
+					 * `event.getEntity()` gets the newly cloned player (respawned player), and we
+					 * must use this method to access the `newStore` instead of
+					 * `event.getOriginal()`, that gets the player's entity before dying, because we
+					 * have to overwrite the default value (`newStore.currency = 0`) with the old
+					 * one inside of `oldStore` with `copyFrom`.
+					 */
+					event.getEntity().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(newStore -> {
 						newStore.copyCurrencyFrom(oldStore);
 					});
 				});
+				/***
+				 * call `event.getOriginal().invalidateCaps()` after accessing the old values of
+				 * the capabilities to invalidate the old capabilities and use the new ones.
+				 */
+				event.getOriginal().invalidateCaps();
 			}
 		}
 
@@ -115,16 +139,16 @@ public class ModEvents {
 			event.register(PlayerCurrency.class);
 
 		}
-		
+
 		@SubscribeEvent
 		public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
-			if(!event.getLevel().isClientSide()) {
-	            if(event.getEntity() instanceof ServerPlayer player) {
-	                player.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+			if (!event.getLevel().isClientSide()) {
+				if (event.getEntity() instanceof ServerPlayer player) {
+					player.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
 						ModMessages.sendToPlayer(new CurrencyDataSyncS2CPacket(currency.getCurrency()), player);
-	                });
-	            }
-	        }
+					});
+				}
+			}
 		}
 
 		/***
