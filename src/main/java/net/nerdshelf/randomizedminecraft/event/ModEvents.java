@@ -1,12 +1,17 @@
 package net.nerdshelf.randomizedminecraft.event;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,10 +46,16 @@ import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -226,6 +237,208 @@ public class ModEvents {
 		@SubscribeEvent
 		public static void giveExperiencePoints(PlayerXpEvent event) {
 			event.setCanceled(true);
+		}
+
+		@SubscribeEvent
+		public static void onAnvilChange(AnvilUpdateEvent event) {
+
+			ItemStack inputLeft = event.getLeft();
+			ItemStack inputRight = event.getRight();
+
+			SimpleContainer inputSlots = new SimpleContainer(2);
+			inputSlots.addItem(inputLeft);
+			inputSlots.addItem(inputRight);
+
+			event.getPlayer().sendSystemMessage(
+					Component.literal("cost: " + createResult(inputSlots, event.getPlayer(), event.getName())));
+
+		}
+
+		/***
+		 * 
+		 * this is literally the function {@link AnvilMenu#createResult()} with some
+		 * adjustments
+		 */
+		public static int createResult(SimpleContainer inputs, Player player, String itemName) {
+
+			Container inputSlots = inputs;
+			DataSlot cost = DataSlot.standalone();
+			int repairItemCountCost;
+
+			ItemStack itemstack = inputSlots.getItem(0);
+			cost.set(1);
+			int i = 0;
+			int j = 0;
+			int k = 0;
+			if (itemstack.isEmpty()) {
+				cost.set(0);
+			} else {
+				ItemStack itemstack1 = itemstack.copy();
+				ItemStack itemstack2 = inputSlots.getItem(1);
+				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
+				j += itemstack.getBaseRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getBaseRepairCost());
+				repairItemCountCost = 0;
+				boolean flag = false;
+
+				if (!itemstack2.isEmpty()) {
+					flag = itemstack2.getItem() == Items.ENCHANTED_BOOK
+							&& !EnchantedBookItem.getEnchantments(itemstack2).isEmpty();
+					if (itemstack1.isDamageableItem()
+							&& itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
+						int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
+						if (l2 <= 0) {
+							cost.set(0);
+							return cost.get();
+						}
+
+						int i3;
+						for (i3 = 0; l2 > 0 && i3 < itemstack2.getCount(); ++i3) {
+							int j3 = itemstack1.getDamageValue() - l2;
+							itemstack1.setDamageValue(j3);
+							++i;
+							l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
+						}
+
+						repairItemCountCost = i3;
+					} else {
+						if (!flag && (!itemstack1.is(itemstack2.getItem()) || !itemstack1.isDamageableItem())) {
+							cost.set(0);
+							return cost.get();
+						}
+
+						if (itemstack1.isDamageableItem() && !flag) {
+							int l = itemstack.getMaxDamage() - itemstack.getDamageValue();
+							int i1 = itemstack2.getMaxDamage() - itemstack2.getDamageValue();
+							int j1 = i1 + itemstack1.getMaxDamage() * 12 / 100;
+							int k1 = l + j1;
+							int l1 = itemstack1.getMaxDamage() - k1;
+							if (l1 < 0) {
+								l1 = 0;
+							}
+
+							if (l1 < itemstack1.getDamageValue()) {
+								itemstack1.setDamageValue(l1);
+								i += 2;
+							}
+						}
+
+						Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(itemstack2);
+						boolean flag2 = false;
+						boolean flag3 = false;
+
+						for (Enchantment enchantment1 : map1.keySet()) {
+							if (enchantment1 != null) {
+								int i2 = map.getOrDefault(enchantment1, 0);
+								int j2 = map1.get(enchantment1);
+								j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+								boolean flag1 = enchantment1.canEnchant(itemstack);
+								if (player.getAbilities().instabuild || itemstack.is(Items.ENCHANTED_BOOK)) {
+									flag1 = true;
+								}
+
+								for (Enchantment enchantment : map.keySet()) {
+									if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
+										flag1 = false;
+										++i;
+									}
+								}
+
+								if (!flag1) {
+									flag3 = true;
+								} else {
+									flag2 = true;
+									if (j2 > enchantment1.getMaxLevel()) {
+										j2 = enchantment1.getMaxLevel();
+									}
+
+									map.put(enchantment1, j2);
+									int k3 = 0;
+									switch (enchantment1.getRarity()) {
+									case COMMON:
+										k3 = 1;
+										break;
+									case UNCOMMON:
+										k3 = 2;
+										break;
+									case RARE:
+										k3 = 4;
+										break;
+									case VERY_RARE:
+										k3 = 8;
+									}
+
+									if (flag) {
+										k3 = Math.max(1, k3 / 2);
+									}
+
+									i += k3 * j2;
+									if (itemstack.getCount() > 1) {
+										i = 40;
+									}
+								}
+							}
+						}
+
+						if (flag3 && !flag2) {
+							cost.set(0);
+							return cost.get();
+						}
+					}
+				}
+
+				if (StringUtils.isBlank(itemName)) {
+					if (itemstack.hasCustomHoverName()) {
+						k = 1;
+						i += k;
+						itemstack1.resetHoverName();
+					}
+				} else if (!itemName.equals(itemstack.getHoverName().getString())) {
+					k = 1;
+					i += k;
+					itemstack1.setHoverName(Component.literal(itemName));
+				}
+				if (flag && !itemstack1.isBookEnchantable(itemstack2))
+					itemstack1 = ItemStack.EMPTY;
+
+				cost.set(j + i);
+				if (i <= 0) {
+					itemstack1 = ItemStack.EMPTY;
+				}
+
+				if (k == i && k > 0 && cost.get() >= 40) {
+					cost.set(39);
+				}
+
+				if (cost.get() >= 40 && !player.getAbilities().instabuild) {
+					itemstack1 = ItemStack.EMPTY;
+				}
+
+				if (!itemstack1.isEmpty()) {
+					int k2 = itemstack1.getBaseRepairCost();
+					if (!itemstack2.isEmpty() && k2 < itemstack2.getBaseRepairCost()) {
+						k2 = itemstack2.getBaseRepairCost();
+					}
+
+					if (k != i || k == 0) {
+						k2 = calculateIncreasedRepairCost(k2);
+					}
+
+					itemstack1.setRepairCost(k2);
+					EnchantmentHelper.setEnchantments(map, itemstack1);
+				}
+
+			}
+			return cost.get();
+		}
+
+		/***
+		 * 
+		 * this is literally the function
+		 * {@link AnvilMenu#calculateIncreasedRepairCost()}
+		 * 
+		 */
+		public static int calculateIncreasedRepairCost(int p_39026_) {
+			return p_39026_ * 2 + 1;
 		}
 
 		/***
