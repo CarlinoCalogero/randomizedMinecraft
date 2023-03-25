@@ -48,20 +48,24 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -81,6 +85,10 @@ public class ModEvents {
 
 	@Mod.EventBusSubscriber(modid = RandomizedMinecraftMod.MOD_ID)
 	public static class ForgeEvents {
+
+		private static DataSlot cost = DataSlot.standalone();
+		private static ResultContainer resultSlots = new ResultContainer();
+		private static boolean purchasable = true;
 
 		/**
 		 * Used to override player fields
@@ -240,7 +248,21 @@ public class ModEvents {
 		}
 
 		@SubscribeEvent
+		public static void replaceAnvil(EntityPlaceEvent event) {
+
+			if (event.getPlacedBlock().getBlock() instanceof AnvilBlock) {
+				if (!event.getEntity().getLevel().isClientSide()) {
+					System.out.println("Anvil replaced");
+					event.getLevel().setBlock(event.getPos(), ModBlocks.JUMPY_BLOCK.get().defaultBlockState(), 0);
+				}
+			}
+
+		}
+
+		@SubscribeEvent
 		public static void onAnvilChange(AnvilUpdateEvent event) {
+
+			Player player = event.getPlayer();
 
 			ItemStack inputLeft = event.getLeft();
 			ItemStack inputRight = event.getRight();
@@ -249,8 +271,45 @@ public class ModEvents {
 			inputSlots.addItem(inputLeft);
 			inputSlots.addItem(inputRight);
 
-			event.getPlayer().sendSystemMessage(
-					Component.literal("cost: " + createResult(inputSlots, event.getPlayer(), event.getName())));
+			createResult(inputSlots, event.getPlayer(), event.getName());
+			event.setCost(0);
+			event.setOutput(resultSlots.getItem(0));
+
+			if (cost.get() != 0 && !resultSlots.isEmpty() && !player.getLevel().isClientSide) {
+
+				event.getPlayer()
+						.sendSystemMessage(Component.literal("cost before taking: " + computeAmountToBePayed()));
+
+				player.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+
+					player.sendSystemMessage(Component.literal("Current Currency: " + currency.getCurrency())
+							.withStyle(ChatFormatting.YELLOW));
+
+					int currentCurrency = currency.getCurrency();
+
+					if (cost.get() != 0 && currentCurrency < computeAmountToBePayed()) {
+						purchasable = false;
+						System.out.println("Not Purchasable");
+					} else if (cost.get() != 0) {
+						purchasable = true;
+						System.out.println("Purchasable");
+					}
+
+				});
+
+			}
+
+		}
+
+		@SubscribeEvent
+		public static void onAnvilRepair(AnvilRepairEvent event) {
+
+			event.getEntity().sendSystemMessage(Component.literal("cost when taking: " + cost.get()));
+			int amount = -computeAmountToBePayed();
+
+			if (!event.getEntity().getLevel().isClientSide()) {
+				ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount));
+			}
 
 		}
 
@@ -259,10 +318,9 @@ public class ModEvents {
 		 * this is literally the function {@link AnvilMenu#createResult()} with some
 		 * adjustments
 		 */
-		public static int createResult(SimpleContainer inputs, Player player, String itemName) {
+		public static void createResult(SimpleContainer inputs, Player player, String itemName) {
 
 			Container inputSlots = inputs;
-			DataSlot cost = DataSlot.standalone();
 			int repairItemCountCost;
 
 			ItemStack itemstack = inputSlots.getItem(0);
@@ -271,6 +329,7 @@ public class ModEvents {
 			int j = 0;
 			int k = 0;
 			if (itemstack.isEmpty()) {
+				resultSlots.setItem(0, ItemStack.EMPTY);
 				cost.set(0);
 			} else {
 				ItemStack itemstack1 = itemstack.copy();
@@ -287,8 +346,9 @@ public class ModEvents {
 							&& itemstack1.getItem().isValidRepairItem(itemstack, itemstack2)) {
 						int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
 						if (l2 <= 0) {
+							resultSlots.setItem(0, ItemStack.EMPTY);
 							cost.set(0);
-							return cost.get();
+							return;
 						}
 
 						int i3;
@@ -302,8 +362,9 @@ public class ModEvents {
 						repairItemCountCost = i3;
 					} else {
 						if (!flag && (!itemstack1.is(itemstack2.getItem()) || !itemstack1.isDamageableItem())) {
+							resultSlots.setItem(0, ItemStack.EMPTY);
 							cost.set(0);
-							return cost.get();
+							return;
 						}
 
 						if (itemstack1.isDamageableItem() && !flag) {
@@ -380,8 +441,9 @@ public class ModEvents {
 						}
 
 						if (flag3 && !flag2) {
+							resultSlots.setItem(0, ItemStack.EMPTY);
 							cost.set(0);
-							return cost.get();
+							return;
 						}
 					}
 				}
@@ -427,8 +489,8 @@ public class ModEvents {
 					EnchantmentHelper.setEnchantments(map, itemstack1);
 				}
 
+				resultSlots.setItem(0, itemstack1);
 			}
-			return cost.get();
 		}
 
 		/***
@@ -439,6 +501,10 @@ public class ModEvents {
 		 */
 		public static int calculateIncreasedRepairCost(int p_39026_) {
 			return p_39026_ * 2 + 1;
+		}
+
+		public static int computeAmountToBePayed() {
+			return cost.get() * 10;
 		}
 
 		/***
