@@ -3,10 +3,14 @@
 
   "block.randomizedminecraftmod.zircon_block": "Block of Zircon",
   "block.randomizedminecraftmod.jumpy_block": "Jumpy Block",
+  "block.randomizedminecraftmod.custom_anvil_block": "Custom Anvil",
 
   "entity.minecraft.villager.randomizedminecraftmod.jumpy_master": "Jumpy Master",
 
   "item_group.randomizedminecraftmod.randomizedminecraftmod": "Randomized Minecraft",
 
-  "message.randomizedminecraftmod.increase_currency": "Currency increased!"
+  "message.randomizedminecraftmod.increase_currency": "Currency increased!",
+  
+  "container.repair.cost": "Cost in currency: %1$s",
+  "container.repair": "Custom Repair & Name"
 }
