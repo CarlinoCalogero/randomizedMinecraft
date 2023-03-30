@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "randomizedminecraftmod:block/currency_anvil"
+    },
+    "facing=south": {
+      "model": "randomizedminecraftmod:block/currency_anvil",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "randomizedminecraftmod:block/currency_anvil",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "randomizedminecraftmod:block/currency_anvil",
+      "y": 90
+    }
+  }
+}

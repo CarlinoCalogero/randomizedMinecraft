@@ -10,9 +10,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.nerdshelf.randomizedminecraft.block.ModBlocks;
+import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
-import net.nerdshelf.randomizedminecraft.screen.CustomAnvilScreen;
+import net.nerdshelf.randomizedminecraft.screen.CurrencyAnvilScreen;
 import net.nerdshelf.randomizedminecraft.screen.ModMenuTypes;
 import net.nerdshelf.randomizedminecraft.villager.ModVillagers;
 
@@ -34,6 +35,11 @@ public class RandomizedMinecraftMod {
 		// Register the mod villagers
 		ModVillagers.register(modEventBus);
 
+		// Register the Deferred Register to the mod event bus so blocks entities get
+		// registered
+		ModBlockEntities.register(modEventBus);
+
+		// Register the Deferred Register to the mod event bus so menus get registered
 		ModMenuTypes.register(modEventBus);
 
 		// Register the commonSetup method for modloading
@@ -61,7 +67,8 @@ public class RandomizedMinecraftMod {
 		@SubscribeEvent
 		public static void onClientSetup(FMLClientSetupEvent event) {
 
-			MenuScreens.register(ModMenuTypes.CUSTOM_ANVIL_MENU.get(), CustomAnvilScreen::new);
+			MenuScreens.register(ModMenuTypes.CURRENCY_ANVIL_MENU.get(), CurrencyAnvilScreen::new);
+
 		}
 	}
 }

@@ -2,14 +2,11 @@ package net.nerdshelf.randomizedminecraft.event;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -47,15 +44,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.level.block.AnvilBlock;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
@@ -65,7 +58,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
 import net.nerdshelf.randomizedminecraft.block.ModBlocks;
-import net.nerdshelf.randomizedminecraft.block.custom.CustomAnvilBlock;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrency;
 import net.nerdshelf.randomizedminecraft.currency.PlayerCurrencyProvider;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
@@ -73,7 +65,6 @@ import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyDataSyncS2CPacket;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
 import net.nerdshelf.randomizedminecraft.player.CustomFoodStats;
-import net.nerdshelf.randomizedminecraft.screen.CustomAnvilMenu;
 import net.nerdshelf.randomizedminecraft.villager.ModVillagers;
 
 public class ModEvents {
@@ -238,37 +229,16 @@ public class ModEvents {
 			event.setCanceled(true);
 		}
 
-		public static boolean customOnAnvilChange(CustomAnvilMenu container, @NotNull ItemStack left,
-				@NotNull ItemStack right, Container outputSlot, String name, int baseCost, Player player) {
-			AnvilUpdateEvent e = new AnvilUpdateEvent(left, right, name, baseCost, player);
-			if (MinecraftForge.EVENT_BUS.post(e))
-				return false;
-			if (e.getOutput().isEmpty())
-				return true;
-
-			outputSlot.setItem(0, e.getOutput());
-			container.setMaximumCost(e.getCost());
-			container.repairItemCountCost = e.getMaterialCost();
-			return false;
-		}
-		
-		public static float customOnAnvilRepair(Player player, @NotNull ItemStack output, @NotNull ItemStack left, @NotNull ItemStack right)
-	    {
-	        AnvilRepairEvent e = new AnvilRepairEvent(player, left, right, output);
-	        MinecraftForge.EVENT_BUS.post(e);
-	        return e.getBreakChance();
-	    }
-
 		@SubscribeEvent
 		public static void replaceAnvil(EntityPlaceEvent event) {
 
-			if (event.getPlacedBlock().getBlock() instanceof AnvilBlock
-					&& !(event.getPlacedBlock().getBlock() instanceof CustomAnvilBlock)) {
-				if (!event.getEntity().getLevel().isClientSide()) {
-					System.out.println("Anvil replaced");
-					event.getLevel().setBlock(event.getPos(), ModBlocks.JUMPY_BLOCK.get().defaultBlockState(), 0);
-				}
-			}
+//			if (event.getPlacedBlock().getBlock() instanceof AnvilBlock
+//					&& !(event.getPlacedBlock().getBlock() instanceof CustomAnvilBlock)) {
+//				if (!event.getEntity().getLevel().isClientSide()) {
+//					System.out.println("Anvil replaced");
+//					event.getLevel().setBlock(event.getPos(), ModBlocks.JUMPY_BLOCK.get().defaultBlockState(), 0);
+//				}
+//			}
 
 		}
 
@@ -509,7 +479,7 @@ public class ModEvents {
 								populator.accept(ModItems.RANDOM_DAY_OR_NIGHT.get());
 								populator.accept(ModBlocks.ZIRCON_BLOCK.get());
 								populator.accept(ModBlocks.JUMPY_BLOCK.get());
-								populator.accept(ModBlocks.CUSTOM_ANVIL_BLOCK.get());
+								populator.accept(ModBlocks.CURRENCY_ANVIL.get());
 							}));
 		}
 
