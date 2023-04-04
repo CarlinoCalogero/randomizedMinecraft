@@ -29,8 +29,8 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		int x = (width - imageWidth) / 2;
-		int y = (height - imageHeight) / 2;
+		int x = (this.width - imageWidth) / 2;
+		int y = (this.height - imageHeight) / 2;
 
 		this.blit(pPoseStack, x, y, 0, 0, imageWidth, imageHeight); // renders the texture
 
@@ -47,6 +47,10 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 	public void render(PoseStack pPoseStack, int mouseX, int mouseY, float delta) {
 		renderBackground(pPoseStack);
 		super.render(pPoseStack, mouseX, mouseY, delta);
-		renderTooltip(pPoseStack, mouseX, mouseY);
+		/*
+		 * This method is added by the container screen to render a tooltip for whatever
+		 * slot is hovered over.
+		 */
+		this.renderTooltip(pPoseStack, mouseX, mouseY);
 	}
 }
