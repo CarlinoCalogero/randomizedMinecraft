@@ -17,6 +17,7 @@ import net.nerdshelf.randomizedminecraft.block.ModBlocks;
 import net.nerdshelf.randomizedminecraft.block.entity.CurrencyAnvilBlockEntity;
 
 public class CurrencyAnvilMenu extends AbstractContainerMenu {
+
 	public final CurrencyAnvilBlockEntity blockEntity;
 	private final Level level;
 	private final ContainerData data; // used for synchronization
@@ -39,7 +40,7 @@ public class CurrencyAnvilMenu extends AbstractContainerMenu {
 		addPlayerHotbar(inv);
 
 		this.blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
-			//these are the custom slots where the player can insert the items
+			// these are the custom slots where the player can insert the items
 			this.addSlot(new SlotItemHandler(handler, 0, 27, 47));
 			this.addSlot(new SlotItemHandler(handler, 1, 76, 47));
 			this.addSlot(new SlotItemHandler(handler, 2, 134, 47));
