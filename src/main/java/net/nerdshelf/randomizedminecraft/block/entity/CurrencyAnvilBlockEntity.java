@@ -48,8 +48,9 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	protected final ContainerData data; // used to send data to the menu. the menu is responsibile for synchronizing the
 										// server data to the client
 	private int cost;
-	private int crafted;
-	private String itemName;
+	private int synch;
+
+	private static String itemName;
 
 	public CurrencyAnvilBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.CURRENCY_ANVIL.get(), pos, state);
@@ -58,7 +59,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			public int get(int index) {
 				return switch (index) {
 				case 0 -> CurrencyAnvilBlockEntity.this.cost;
-				case 1 -> CurrencyAnvilBlockEntity.this.crafted;
+				case 1 -> CurrencyAnvilBlockEntity.this.synch;
 				default -> 0;
 				};
 			}
@@ -67,13 +68,13 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			public void set(int index, int value) {
 				switch (index) {
 				case 0 -> CurrencyAnvilBlockEntity.this.cost = value;
-				case 1 -> CurrencyAnvilBlockEntity.this.cost = value;
+				case 1 -> CurrencyAnvilBlockEntity.this.synch = value;
 				}
 			}
 
 			@Override
 			public int getCount() {
-				return 3; // number of variables of the container data (progress and maxProgress, so 2
+				return 2; // number of variables of the container data (progress and maxProgress, so 2
 							// variables)
 			}
 		};
@@ -118,7 +119,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	protected void saveAdditional(CompoundTag nbt) {
 		nbt.put("inventory", itemHandler.serializeNBT());
 		nbt.putInt("currency_anvil.cost", this.cost);
-		nbt.putInt("currency_anvil.crafted", this.crafted);
 
 		super.saveAdditional(nbt);
 	}
@@ -131,7 +131,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		super.load(nbt);
 		itemHandler.deserializeNBT(nbt.getCompound("inventory"));
 		cost = nbt.getInt("currency_anvil.cost");
-		crafted = nbt.getInt("currency_anvil.crafted");
 	}
 
 	/***
@@ -151,7 +150,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			return;
 		}
 
-		System.out.println("cost: " + pEntity.cost + ", crafted: " + pEntity.crafted + ", name: " + pEntity.itemName);
+		System.out.println("cost: " + pEntity.cost + ", name: " + CurrencyAnvilBlockEntity.itemName);
 
 		// 0 0 0
 		if ((pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY)
@@ -228,10 +227,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 	private void resetCost() {
 		this.cost = 0;
-	}
-
-	private void resetCrafted() {
-		this.crafted = 0;
 	}
 
 	protected static void onTake(CurrencyAnvilBlockEntity pEntity) {
@@ -369,8 +364,8 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			}
 
 			// System.out.println("Paperino - i: " + i + ", k:" + k);
-			// System.out.println("ItemName: " + pEntity.itemName);
-			if (StringUtils.isBlank(pEntity.itemName)) {
+			// System.out.println("ItemName: " + CurrencyAnvilBlockEntity.itemName);
+			if (StringUtils.isBlank(CurrencyAnvilBlockEntity.itemName)) {
 				// System.out.println("Fornace - i: " + i + ", k:" + k);
 				if (itemstack.hasCustomHoverName()) {
 					// System.out.println("Bocconcino - i: " + i + ", k:" + k);
@@ -378,11 +373,11 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 					i += k;
 					itemstack1.resetHoverName();
 				}
-			} else if (!pEntity.itemName.equals(itemstack.getHoverName().getString())) {
+			} else if (!CurrencyAnvilBlockEntity.itemName.equals(itemstack.getHoverName().getString())) {
 				k = 1;
 				i += k;
 				// System.out.println("Pizza - i: " + i + ", k:" + k);
-				itemstack1.setHoverName(Component.literal(pEntity.itemName));
+				itemstack1.setHoverName(Component.literal(CurrencyAnvilBlockEntity.itemName));
 			}
 			if (flag && !itemstack1.isBookEnchantable(itemstack2)) {
 				itemstack1 = ItemStack.EMPTY;
@@ -420,7 +415,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 			// System.out.println(itemstack1);
 			pEntity.itemHandler.setStackInSlot(2, itemstack1);
-			pEntity.crafted = 1;
 		}
 	}
 
@@ -439,7 +433,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			newName = "";
 		}
 
-		this.itemName = newName;
+		CurrencyAnvilBlockEntity.itemName = newName;
 
 		System.out.println("InsideItemName: " + name);
 
@@ -448,7 +442,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			if (StringUtils.isBlank(name)) {
 				itemstack.resetHoverName();
 			} else {
-				itemstack.setHoverName(Component.literal(this.itemName));
+				itemstack.setHoverName(Component.literal(CurrencyAnvilBlockEntity.itemName));
 			}
 		}
 

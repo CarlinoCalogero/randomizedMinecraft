@@ -71,11 +71,8 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 	}
 
 	private void onNameChanged(String name) {
-		if (!name.isEmpty()) {
-			System.out.println("maaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-			this.menu.blockEntity.setItemName(name);
-			this.minecraft.player.connection.send(new ServerboundRenameItemPacket(name));
-		}
+		this.menu.setItemName(name);
+		this.minecraft.player.connection.send(new ServerboundRenameItemPacket(name));
 	}
 
 	@Override

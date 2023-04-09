@@ -49,8 +49,8 @@ public class CurrencyAnvilMenu extends AbstractContainerMenu {
 		addDataSlots(data);
 	}
 
-	public boolean isCrafting() {
-		return data.get(0) > 0;
+	public void setItemName(String name) {
+		this.blockEntity.setItemName(name);
 	}
 
 	public int getScaledProgress() {
