@@ -30,6 +30,11 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 
 		// Add ticking logic for EditBox in editBox
 		this.name.tick();
+
+		if (!this.menu.isSlotOEmpty()) {
+			this.name.setEditable(true);
+			this.setFocused(this.name);
+		}
 	}
 
 	@Override
@@ -39,17 +44,17 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 		// Add widgets and precomputed values
 		int x = (this.width - imageWidth) / 2;
 		int y = (this.height - imageHeight) / 2;
-		name = new EditBox(this.font, x + 62, y + 24, 103, 12, Component.translatable("container.repair"));
-		name.setCanLoseFocus(false);
-		name.setTextColor(-1);
-		name.setTextColorUneditable(-1);
-		name.setBordered(false);
-		name.setMaxLength(50);
-		name.setResponder(this::onNameChanged);
-		name.setValue("");
-		this.addRenderableWidget(name);
-		this.setInitialFocus(name);
-		// name.setEditable(false);
+		this.name = new EditBox(this.font, x + 62, y + 24, 103, 12, Component.translatable("container.repair"));
+		this.name.setCanLoseFocus(false);
+		this.name.setTextColor(-1);
+		this.name.setTextColorUneditable(-1);
+		this.name.setBordered(false);
+		this.name.setMaxLength(50);
+		this.name.setResponder(this::onNameChanged);
+		this.name.setValue("");
+		this.addRenderableWidget(this.name);
+		this.setInitialFocus(this.name);
+		this.name.setEditable(false);
 	}
 
 	@Override
@@ -84,6 +89,12 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 		int y = (this.height - imageHeight) / 2;
 
 		this.blit(pPoseStack, x, y, 0, 0, imageWidth, imageHeight); // renders the texture
+
+		if (this.menu.isSlotOEmpty()) {
+			this.blit(pPoseStack, x + 59, y + 20, 0, 182, 110, 16); // renders TextBox texture
+		} else {
+			this.blit(pPoseStack, x + 59, y + 20, 0, 166, 110, 16); // renders TextBox texture
+		}
 
 	}
 

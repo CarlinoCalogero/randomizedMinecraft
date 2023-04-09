@@ -49,18 +49,6 @@ public class CurrencyAnvilMenu extends AbstractContainerMenu {
 		addDataSlots(data);
 	}
 
-	public void setItemName(String name) {
-		this.blockEntity.setItemName(name);
-	}
-
-	public int getScaledProgress() {
-		int progress = this.data.get(0);
-		int maxProgress = this.data.get(1); // Max Progress
-		int progressArrowSize = 26; // This is the height in pixels of your arrow
-
-		return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
-	}
-
 	// CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
 	// must assign a slot number to each of the slots used by the GUI.
 	// For this container, we can see both the tile inventory's slots as well as the
@@ -142,4 +130,15 @@ public class CurrencyAnvilMenu extends AbstractContainerMenu {
 			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
 		}
 	}
+
+	/* THIS MENU METHODS */
+
+	public void setItemName(String name) {
+		this.blockEntity.setItemName(name);
+	}
+
+	public boolean isSlotOEmpty() {
+		return this.data.get(1) == 1 ? true : false;
+	}
+
 }

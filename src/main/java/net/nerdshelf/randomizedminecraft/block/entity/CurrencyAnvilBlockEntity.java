@@ -48,7 +48,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	protected final ContainerData data; // used to send data to the menu. the menu is responsibile for synchronizing the
 										// server data to the client
 	private int cost;
-	private int synch;
+	private int isSlotOEmpty;
 
 	private static String itemName;
 
@@ -59,7 +59,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			public int get(int index) {
 				return switch (index) {
 				case 0 -> CurrencyAnvilBlockEntity.this.cost;
-				case 1 -> CurrencyAnvilBlockEntity.this.synch;
+				case 1 -> CurrencyAnvilBlockEntity.this.isSlotOEmpty;
 				default -> 0;
 				};
 			}
@@ -68,7 +68,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			public void set(int index, int value) {
 				switch (index) {
 				case 0 -> CurrencyAnvilBlockEntity.this.cost = value;
-				case 1 -> CurrencyAnvilBlockEntity.this.synch = value;
+				case 1 -> CurrencyAnvilBlockEntity.this.isSlotOEmpty = value;
 				}
 			}
 
@@ -119,6 +119,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	protected void saveAdditional(CompoundTag nbt) {
 		nbt.put("inventory", itemHandler.serializeNBT());
 		nbt.putInt("currency_anvil.cost", this.cost);
+		nbt.putInt("currency_anvil.isSlotOEmpty", this.isSlotOEmpty);
 
 		super.saveAdditional(nbt);
 	}
@@ -131,6 +132,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		super.load(nbt);
 		itemHandler.deserializeNBT(nbt.getCompound("inventory"));
 		cost = nbt.getInt("currency_anvil.cost");
+		isSlotOEmpty = nbt.getInt("currency_anvil.isSlotOEmpty");
 	}
 
 	/***
@@ -148,6 +150,17 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	public static void tick(Level level, BlockPos pos, BlockState state, CurrencyAnvilBlockEntity pEntity) {
 		if (level.isClientSide()) {
 			return;
+		}
+
+		if (pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY) {
+			pEntity.isSlotOEmpty = 1;
+		} else {
+			pEntity.isSlotOEmpty = 0;
+		}
+
+		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
+				&& pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY) {
+			CurrencyAnvilBlockEntity.itemName = pEntity.itemHandler.getStackInSlot(0).getHoverName().getString();
 		}
 
 		System.out.println("cost: " + pEntity.cost + ", name: " + CurrencyAnvilBlockEntity.itemName);
