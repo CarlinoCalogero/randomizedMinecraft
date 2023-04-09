@@ -49,6 +49,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 										// server data to the client
 	private int cost;
 	private int isSlotOEmpty;
+	private int isCrafted;
 
 	private static String itemName;
 
@@ -60,6 +61,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				return switch (index) {
 				case 0 -> CurrencyAnvilBlockEntity.this.cost;
 				case 1 -> CurrencyAnvilBlockEntity.this.isSlotOEmpty;
+				case 2 -> CurrencyAnvilBlockEntity.this.isCrafted;
 				default -> 0;
 				};
 			}
@@ -69,12 +71,13 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				switch (index) {
 				case 0 -> CurrencyAnvilBlockEntity.this.cost = value;
 				case 1 -> CurrencyAnvilBlockEntity.this.isSlotOEmpty = value;
+				case 2 -> CurrencyAnvilBlockEntity.this.isCrafted = value;
 				}
 			}
 
 			@Override
 			public int getCount() {
-				return 2; // number of variables of the container data (progress and maxProgress, so 2
+				return 3; // number of variables of the container data (progress and maxProgress, so 2
 							// variables)
 			}
 		};
@@ -120,6 +123,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		nbt.put("inventory", itemHandler.serializeNBT());
 		nbt.putInt("currency_anvil.cost", this.cost);
 		nbt.putInt("currency_anvil.isSlotOEmpty", this.isSlotOEmpty);
+		nbt.putInt("currency_anvil.isCrafted", this.isCrafted);
 
 		super.saveAdditional(nbt);
 	}
@@ -133,6 +137,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		itemHandler.deserializeNBT(nbt.getCompound("inventory"));
 		cost = nbt.getInt("currency_anvil.cost");
 		isSlotOEmpty = nbt.getInt("currency_anvil.isSlotOEmpty");
+		isCrafted = nbt.getInt("currency_anvil.isCrafted");
 	}
 
 	/***
@@ -158,78 +163,33 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			pEntity.isSlotOEmpty = 0;
 		}
 
-		System.out.println("cost: " + pEntity.cost + ", name: " + CurrencyAnvilBlockEntity.itemName);
-
-		// 0 0 0
-		if ((pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-			// System.out.println("0 0 0");
-		}
-
-		// 0 0 1
-		if ((pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) != ItemStack.EMPTY)) {
-			// System.out.println("0 0 1");
-			createResult(pEntity);
-			setChanged(level, pos, state); // reloads if needed every time we add a progress
-		}
-
-		// 0 1 0
-		if ((pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-			// System.out.println("0 1 0");
-			return;
-		}
-
-		// 0 1 1
-		if ((pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) != ItemStack.EMPTY)) {
-			// System.out.println("0 1 1");
-			createResult(pEntity);
-			setChanged(level, pos, state); // reloads if needed every time we add a progress
-		}
+		System.out.println("cost: " + pEntity.cost + ", name: " + CurrencyAnvilBlockEntity.itemName + ", isCrafted: "
+				+ pEntity.isCrafted);
 
 		// 1 0 0
 		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
 				&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
 				&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-			// System.out.println("1 0 0");
-			createResult(pEntity);
-			setChanged(level, pos, state); // reloads if needed every time we add a progress
-		}
-
-		// 1 0 1
-		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) != ItemStack.EMPTY)) {
-			// System.out.println("1 0 1");
-			createResult(pEntity);
-			setChanged(level, pos, state); // reloads if needed every time we add a progress
+			System.out.println("1 0 0");
+			if (pEntity.isCrafted == 1) {
+				System.out.println("-------------------------------");
+				onTake(pEntity);
+			}
 		}
 
 		// 1 1 0
 		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
 				&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
 				&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-			// System.out.println("1 1 0");
-			createResult(pEntity);
-			setChanged(level, pos, state); // reloads if needed every time we add a progress
+			System.out.println("1 1 0");
+			if (pEntity.isCrafted == 1) {
+				System.out.println("-------------------------------");
+				onTake(pEntity);
+			}
 		}
 
-		// 1 1 1
-		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) != ItemStack.EMPTY)) {
-			// System.out.println("1 1 1");
-		}
-
-		// onTake(pEntity);
-		// pEntity.resetCost();
-		// pEntity.resetCrafted();
+		createResult(pEntity);
+		setChanged(level, pos, state); // reloads if needed every time we add a progress
 
 	}
 
@@ -237,9 +197,26 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		this.cost = 0;
 	}
 
+	private void resetName() {
+		CurrencyAnvilBlockEntity.itemName = null;
+	}
+
 	protected static void onTake(CurrencyAnvilBlockEntity pEntity) {
-		pEntity.itemHandler.extractItem(0, 1, false);
-		pEntity.itemHandler.extractItem(1, 1, false);
+
+		ItemStack itemStack0 = pEntity.itemHandler.getStackInSlot(0);
+		ItemStack itemStack1 = pEntity.itemHandler.getStackInSlot(1);
+
+		if (itemStack0 != ItemStack.EMPTY) {
+			pEntity.itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+		}
+
+		if (itemStack1 != ItemStack.EMPTY) {
+			pEntity.itemHandler.setStackInSlot(1, ItemStack.EMPTY);
+		}
+
+		pEntity.isCrafted = 0;
+		pEntity.resetCost();
+		pEntity.resetName();
 	}
 
 	public static void createResult(CurrencyAnvilBlockEntity pEntity) {
@@ -252,6 +229,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 		if (itemstack.isEmpty()) {
 			pEntity.itemHandler.setStackInSlot(2, ItemStack.EMPTY);
+			pEntity.isCrafted = 0;
 			pEntity.cost = 0;
 		} else {
 			ItemStack itemstack1 = itemstack.copy();
@@ -270,6 +248,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 					int l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
 					if (l2 <= 0) {
 						pEntity.itemHandler.setStackInSlot(2, ItemStack.EMPTY);
+						pEntity.isCrafted = 0;
 						pEntity.cost = 0;
 						return;
 					}
@@ -286,6 +265,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				} else {
 					if (!flag && (!itemstack1.is(itemstack2.getItem()) || !itemstack1.isDamageableItem())) {
 						pEntity.itemHandler.setStackInSlot(2, ItemStack.EMPTY);
+						pEntity.isCrafted = 0;
 						pEntity.cost = 0;
 						return;
 					}
@@ -365,18 +345,15 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 					if (flag3 && !flag2) {
 						pEntity.itemHandler.setStackInSlot(2, ItemStack.EMPTY);
+						pEntity.isCrafted = 0;
 						pEntity.cost = 0;
 						return;
 					}
 				}
 			}
 
-			// System.out.println("Paperino - i: " + i + ", k:" + k);
-			// System.out.println("ItemName: " + CurrencyAnvilBlockEntity.itemName);
 			if (StringUtils.isBlank(CurrencyAnvilBlockEntity.itemName)) {
-				// System.out.println("Fornace - i: " + i + ", k:" + k);
 				if (itemstack.hasCustomHoverName()) {
-					// System.out.println("Bocconcino - i: " + i + ", k:" + k);
 					k = 1;
 					i += k;
 					itemstack1.resetHoverName();
@@ -384,18 +361,15 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			} else if (!CurrencyAnvilBlockEntity.itemName.equals(itemstack.getHoverName().getString())) {
 				k = 1;
 				i += k;
-				// System.out.println("Pizza - i: " + i + ", k:" + k);
 				itemstack1.setHoverName(Component.literal(CurrencyAnvilBlockEntity.itemName));
 			}
 			if (flag && !itemstack1.isBookEnchantable(itemstack2)) {
 				itemstack1 = ItemStack.EMPTY;
-				// System.out.println("A");
 			}
 
 			pEntity.cost = j + i;
 			if (i <= 0) {
 				itemstack1 = ItemStack.EMPTY;
-				// System.out.println("B");
 			}
 
 			if (k == i && k > 0 && pEntity.data.get(0) >= 40) {
@@ -404,7 +378,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 			if (pEntity.cost >= 40) {
 				itemstack1 = ItemStack.EMPTY;
-				// System.out.println("C");
 			}
 
 			if (!itemstack1.isEmpty()) {
@@ -421,8 +394,13 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				EnchantmentHelper.setEnchantments(map, itemstack1);
 			}
 
-			// System.out.println(itemstack1);
 			pEntity.itemHandler.setStackInSlot(2, itemstack1);
+			if (itemstack1 == ItemStack.EMPTY) {
+				pEntity.isCrafted = 0;
+			} else {
+				pEntity.isCrafted = 1;
+			}
+
 		}
 	}
 
