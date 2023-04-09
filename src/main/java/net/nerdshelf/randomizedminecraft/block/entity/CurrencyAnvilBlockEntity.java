@@ -158,11 +158,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			pEntity.isSlotOEmpty = 0;
 		}
 
-		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
-				&& pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY) {
-			CurrencyAnvilBlockEntity.itemName = pEntity.itemHandler.getStackInSlot(0).getHoverName().getString();
-		}
-
 		System.out.println("cost: " + pEntity.cost + ", name: " + CurrencyAnvilBlockEntity.itemName);
 
 		// 0 0 0
