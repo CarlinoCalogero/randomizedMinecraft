@@ -25,7 +25,7 @@ public class CurrencyAnvilMenu extends AbstractContainerMenu {
 	public CurrencyAnvilMenu(int id, Inventory inv, FriendlyByteBuf extraData) {
 		// the number in "new SimpleContainerData(2)" has to match the number in the
 		// getCount() method of the Block Entity class
-		this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
+		this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(7));
 	}
 
 	public CurrencyAnvilMenu(int id, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -139,6 +139,31 @@ public class CurrencyAnvilMenu extends AbstractContainerMenu {
 
 	public boolean isSlotOEmpty() {
 		return this.data.get(1) == 1 ? true : false;
+	}
+
+	public boolean isSlot1Empty() {
+		return this.data.get(5) == 1 ? true : false;
+	}
+
+	public boolean isSlot2Empty() {
+		return this.data.get(3) == 1 ? true : false;
+	}
+
+	public boolean isWasCraftedButPlayerCouldNotAfford() {
+		return this.data.get(6) == 1 ? true : false;
+	}
+
+	public int getCost() {
+		return this.data.get(0);
+	}
+
+	public int getCurrentPlayerCurrency() {
+		return this.data.get(4);
+	}
+
+	protected boolean customMayPickup(Player player) {
+		int currentPlayerCurrency = getCurrentPlayerCurrency();
+		return (player.getAbilities().instabuild || currentPlayerCurrency >= this.getCost()) && this.getCost() > 0;
 	}
 
 }

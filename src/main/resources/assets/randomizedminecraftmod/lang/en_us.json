@@ -8,6 +8,9 @@
   "entity.minecraft.villager.randomizedminecraftmod.jumpy_master": "Jumpy Master",
 
   "item_group.randomizedminecraftmod.randomizedminecraftmod": "Randomized Minecraft",
+  
+  "container.repair.randomizedminecraftmod.cost": "Commission Cost: %1$s",
 
-  "message.randomizedminecraftmod.increase_currency": "Currency increased!"
+  "message.randomizedminecraftmod.increase_currency": "Currency increased!",
+  "message.randomizedminecraftmod.decrease_currency": "Currency decreased!"
 }

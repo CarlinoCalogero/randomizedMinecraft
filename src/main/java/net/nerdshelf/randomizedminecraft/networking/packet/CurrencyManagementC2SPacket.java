@@ -13,6 +13,7 @@ import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 public class CurrencyManagementC2SPacket {
 
 	private static final String MESSAGE_INCREASE_CURRENCY = "message.randomizedminecraftmod.increase_currency";
+	private static final String MESSAGE_DECREASE_CURRENCY = "message.randomizedminecraftmod.decrease_currency";
 
 	private static int AMOUNT = 0;
 
@@ -34,14 +35,29 @@ public class CurrencyManagementC2SPacket {
 			// HERE WE ARE ON THE SERVER!
 			ServerPlayer player = context.getSender();
 
-			// Notify the player that currency has been increased
-			player.sendSystemMessage(Component.translatable(MESSAGE_INCREASE_CURRENCY).withStyle(ChatFormatting.GOLD));
-
 			// Increase the currency of player
 			player.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
-				player.sendSystemMessage(
-						Component.literal("+" + CurrencyManagementC2SPacket.AMOUNT).withStyle(ChatFormatting.YELLOW));
-				currency.addCurrency(CurrencyManagementC2SPacket.AMOUNT);
+
+				if (CurrencyManagementC2SPacket.AMOUNT >= 0) {
+
+					// Notify the player that currency has been increased
+					player.sendSystemMessage(
+							Component.translatable(MESSAGE_INCREASE_CURRENCY).withStyle(ChatFormatting.GOLD));
+					player.sendSystemMessage(Component.literal("+" + CurrencyManagementC2SPacket.AMOUNT)
+							.withStyle(ChatFormatting.YELLOW));
+					currency.addCurrency(CurrencyManagementC2SPacket.AMOUNT);
+
+				} else {
+
+					// Notify the player that currency has been decreased
+					player.sendSystemMessage(
+							Component.translatable(MESSAGE_DECREASE_CURRENCY).withStyle(ChatFormatting.GOLD));
+					player.sendSystemMessage(Component.literal("-" + -CurrencyManagementC2SPacket.AMOUNT)
+							.withStyle(ChatFormatting.YELLOW));
+					currency.subCurrency(-CurrencyManagementC2SPacket.AMOUNT);
+
+				}
+
 				player.sendSystemMessage(Component.literal("Current Currency: " + currency.getCurrency())
 						.withStyle(ChatFormatting.YELLOW));
 

@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
 
 public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMenu> {
@@ -19,9 +20,11 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 			"textures/gui/currency_anvil_gui.png");
 
 	EditBox name;
+	private final Player player;
 
 	public CurrencyAnvilScreen(CurrencyAnvilMenu menu, Inventory inventory, Component component) {
 		super(menu, inventory, component);
+		this.player = inventory.player;
 	}
 
 	@Override
@@ -80,6 +83,32 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 		this.minecraft.player.connection.send(new ServerboundRenameItemPacket(name));
 	}
 
+	protected void renderLabels(PoseStack p_97890_, int p_97891_, int p_97892_) {
+		RenderSystem.disableBlend();
+		super.renderLabels(p_97890_, p_97891_, p_97892_);
+		int i = this.menu.getCost();
+		if (i > 0) {
+			int j = 8453920;
+			Component component;
+			if (this.menu.isSlot2Empty() && !this.menu.isWasCraftedButPlayerCouldNotAfford()) {
+				component = null;
+			} else {
+				component = Component.translatable("container.repair.randomizedminecraftmod.cost", i);
+				if (!this.menu.customMayPickup(this.player)) {
+					j = 16736352;
+				}
+			}
+
+			if (component != null) {
+				int k = this.imageWidth - 8 - this.font.width(component) - 2;
+				int l = 69;
+				fill(p_97890_, k - 2, 67, this.imageWidth - 8, 79, 1325400064);
+				this.font.drawShadow(p_97890_, component, (float) k, 69.0F, j);
+			}
+		}
+
+	}
+
 	@Override
 	protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -94,6 +123,14 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 			this.blit(pPoseStack, x + 59, y + 20, 0, 182, 110, 16); // renders TextBox texture
 		} else {
 			this.blit(pPoseStack, x + 59, y + 20, 0, 166, 110, 16); // renders TextBox texture
+		}
+
+		if (!this.menu.isSlot1Empty() && !(!this.menu.isSlotOEmpty() && !this.menu.isSlot1Empty())) {
+			this.blit(pPoseStack, x + 99, y + 45, 176, 0, 28, 21); // renders crossed arrow texture
+		}
+
+		if (this.menu.isWasCraftedButPlayerCouldNotAfford()) {
+			this.blit(pPoseStack, x + 99, y + 45, 176, 0, 28, 21); // renders crossed arrow texture
 		}
 
 	}

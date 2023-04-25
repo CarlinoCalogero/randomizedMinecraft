@@ -30,6 +30,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.nerdshelf.randomizedminecraft.currency.PlayerCurrencyProvider;
+import net.nerdshelf.randomizedminecraft.networking.ModMessages;
+import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyAnvilMenu;
 
 public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvider {
@@ -50,8 +53,14 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	private int cost;
 	private int isSlotOEmpty;
 	private int isCrafted;
+	private int isSlot2Empty;
+	private int currentPlayerCurrency;
+	private int isSlot1Empty;
+	private int wasCraftedButPlayerCannotAfford;
 
 	private static String itemName;
+	private Player currentPlayer = null;
+	private boolean isCurrentPlayerInCreative;
 
 	public CurrencyAnvilBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.CURRENCY_ANVIL.get(), pos, state);
@@ -62,6 +71,10 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				case 0 -> CurrencyAnvilBlockEntity.this.cost;
 				case 1 -> CurrencyAnvilBlockEntity.this.isSlotOEmpty;
 				case 2 -> CurrencyAnvilBlockEntity.this.isCrafted;
+				case 3 -> CurrencyAnvilBlockEntity.this.isSlot2Empty;
+				case 4 -> CurrencyAnvilBlockEntity.this.currentPlayerCurrency;
+				case 5 -> CurrencyAnvilBlockEntity.this.isSlot1Empty;
+				case 6 -> CurrencyAnvilBlockEntity.this.wasCraftedButPlayerCannotAfford;
 				default -> 0;
 				};
 			}
@@ -72,12 +85,16 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				case 0 -> CurrencyAnvilBlockEntity.this.cost = value;
 				case 1 -> CurrencyAnvilBlockEntity.this.isSlotOEmpty = value;
 				case 2 -> CurrencyAnvilBlockEntity.this.isCrafted = value;
+				case 3 -> CurrencyAnvilBlockEntity.this.isSlot2Empty = value;
+				case 4 -> CurrencyAnvilBlockEntity.this.currentPlayerCurrency = value;
+				case 5 -> CurrencyAnvilBlockEntity.this.isSlot1Empty = value;
+				case 6 -> CurrencyAnvilBlockEntity.this.wasCraftedButPlayerCannotAfford = value;
 				}
 			}
 
 			@Override
 			public int getCount() {
-				return 3; // number of variables of the container data (progress and maxProgress, so 2
+				return 7; // number of variables of the container data (progress and maxProgress, so 2
 							// variables)
 			}
 		};
@@ -91,6 +108,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 	@Nullable
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+		this.currentPlayer = player;
 		return new CurrencyAnvilMenu(id, inventory, this, this.data);
 	}
 
@@ -124,6 +142,10 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		nbt.putInt("currency_anvil.cost", this.cost);
 		nbt.putInt("currency_anvil.isSlotOEmpty", this.isSlotOEmpty);
 		nbt.putInt("currency_anvil.isCrafted", this.isCrafted);
+		nbt.putInt("currency_anvil.isSlot2Empty", this.isSlot2Empty);
+		nbt.putInt("currency_anvil.currentPlayerCurrency", this.currentPlayerCurrency);
+		nbt.putInt("currency_anvil.isSlot1Empty", this.isSlot1Empty);
+		nbt.putInt("currency_anvil.wasCraftedButPlayerCannotAfford", this.wasCraftedButPlayerCannotAfford);
 
 		super.saveAdditional(nbt);
 	}
@@ -138,6 +160,10 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		cost = nbt.getInt("currency_anvil.cost");
 		isSlotOEmpty = nbt.getInt("currency_anvil.isSlotOEmpty");
 		isCrafted = nbt.getInt("currency_anvil.isCrafted");
+		isSlot2Empty = nbt.getInt("currency_anvil.isSlot2Empty");
+		currentPlayerCurrency = nbt.getInt("currency_anvil.currentPlayerCurrency");
+		isSlot1Empty = nbt.getInt("currency_anvil.isSlot1Empty");
+		wasCraftedButPlayerCannotAfford = nbt.getInt("currency_anvil.wasCraftedButPlayerCannotAfford");
 	}
 
 	/***
@@ -157,39 +183,61 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			return;
 		}
 
+		if (pEntity.currentPlayer != null) {
+			pEntity.currentPlayer.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+				pEntity.currentPlayerCurrency = currency.getCurrency();
+			});
+			pEntity.isCurrentPlayerInCreative = pEntity.currentPlayer.getAbilities().instabuild;
+		}
+
 		if (pEntity.itemHandler.getStackInSlot(0) == ItemStack.EMPTY) {
 			pEntity.isSlotOEmpty = 1;
 		} else {
 			pEntity.isSlotOEmpty = 0;
 		}
 
-		System.out.println("cost: " + pEntity.cost + ", name: " + CurrencyAnvilBlockEntity.itemName + ", isCrafted: "
-				+ pEntity.isCrafted);
-
-		// 1 0 0
-		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-			System.out.println("1 0 0");
-			if (pEntity.isCrafted == 1) {
-				System.out.println("-------------------------------");
-				onTake(pEntity);
-			}
+		if (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY) {
+			pEntity.isSlot1Empty = 1;
+		} else {
+			pEntity.isSlot1Empty = 0;
 		}
 
-		// 1 1 0
-		if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
-				&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-			System.out.println("1 1 0");
-			if (pEntity.isCrafted == 1) {
-				System.out.println("-------------------------------");
-				onTake(pEntity);
-			}
+		if (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY) {
+			pEntity.isSlot2Empty = 1;
+		} else {
+			pEntity.isSlot2Empty = 0;
 		}
 
-		createResult(pEntity);
-		setChanged(level, pos, state); // reloads if needed every time we add a progress
+		if (pEntity.currentPlayer != null) {
+			// System.out.println("cost: " + pEntity.cost + ", name: " +
+			// CurrencyAnvilBlockEntity.itemName + ", isCrafted: " + pEntity.isCrafted);
+
+			// 1 0 0
+			if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
+					&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
+					&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
+				System.out.println("1 0 0");
+				if (pEntity.isCrafted == 1) {
+					System.out.println("-------------------------------");
+					onTake(pEntity);
+				}
+			}
+
+			// 1 1 0
+			if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
+					&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
+					&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
+				System.out.println("1 1 0");
+				if (pEntity.isCrafted == 1) {
+					System.out.println("-------------------------------");
+					onTake(pEntity);
+				}
+			}
+
+			createResult(pEntity);
+			setChanged(level, pos, state); // reloads if needed every time we add a progress
+
+		}
 
 	}
 
@@ -214,6 +262,10 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			pEntity.itemHandler.setStackInSlot(1, ItemStack.EMPTY);
 		}
 
+		if (!pEntity.currentPlayer.getAbilities().instabuild) {
+			ModMessages.sendToServer(new CurrencyManagementC2SPacket(-pEntity.cost));
+		}
+
 		pEntity.isCrafted = 0;
 		pEntity.resetCost();
 		pEntity.resetName();
@@ -226,6 +278,8 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		int j = 0;
 		int k = 0;
 		int repairItemCountCost;
+
+		pEntity.wasCraftedButPlayerCannotAfford = 0;
 
 		if (itemstack.isEmpty()) {
 			pEntity.itemHandler.setStackInSlot(2, ItemStack.EMPTY);
@@ -376,10 +430,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				pEntity.cost = 39;
 			}
 
-			if (pEntity.cost >= 40) {
-				itemstack1 = ItemStack.EMPTY;
-			}
-
 			if (!itemstack1.isEmpty()) {
 				int k2 = itemstack1.getBaseRepairCost();
 				if (!itemstack2.isEmpty() && k2 < itemstack2.getBaseRepairCost()) {
@@ -392,6 +442,12 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 				itemstack1.setRepairCost(k2);
 				EnchantmentHelper.setEnchantments(map, itemstack1);
+			}
+
+			if (itemstack1 != ItemStack.EMPTY && pEntity.cost > pEntity.currentPlayerCurrency
+					&& !pEntity.isCurrentPlayerInCreative) {
+				itemstack1 = ItemStack.EMPTY;
+				pEntity.wasCraftedButPlayerCannotAfford = 1;
 			}
 
 			pEntity.itemHandler.setStackInSlot(2, itemstack1);
