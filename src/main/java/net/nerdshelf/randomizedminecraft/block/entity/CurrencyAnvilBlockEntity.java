@@ -10,6 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -36,6 +38,8 @@ import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2S
 import net.nerdshelf.randomizedminecraft.screen.CurrencyAnvilMenu;
 
 public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvider {
+
+	private static final Component CONTAINER_TITLE = Component.translatable("randomizedminecraftmod.container.repair");
 
 	// it's basically the inventory of the block entity
 	private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
@@ -102,7 +106,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 	@Override
 	public Component getDisplayName() {
-		return Component.literal("Currency Anvil");
+		return CONTAINER_TITLE;
 	}
 
 	@Nullable
@@ -269,6 +273,8 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		pEntity.isCrafted = 0;
 		pEntity.resetCost();
 		pEntity.resetName();
+		pEntity.currentPlayer.getLevel().playSound(null, pEntity.getBlockPos(), SoundEvents.ANVIL_USE,
+				SoundSource.BLOCKS, 1, 1);
 	}
 
 	public static void createResult(CurrencyAnvilBlockEntity pEntity) {
@@ -277,7 +283,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		int i = 0;
 		int j = 0;
 		int k = 0;
-		int repairItemCountCost;
 
 		pEntity.wasCraftedButPlayerCannotAfford = 0;
 
@@ -290,7 +295,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			ItemStack itemstack2 = pEntity.itemHandler.getStackInSlot(1);
 			Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack1);
 			j += itemstack.getBaseRepairCost() + (itemstack2.isEmpty() ? 0 : itemstack2.getBaseRepairCost());
-			repairItemCountCost = 0;
 			boolean flag = false;
 
 			// if (!net.minecraftforge.common.ForgeHooks.onAnvilChange(this, itemstack,
@@ -315,7 +319,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 						l2 = Math.min(itemstack1.getDamageValue(), itemstack1.getMaxDamage() / 4);
 					}
 
-					repairItemCountCost = i3;
 				} else {
 					if (!flag && (!itemstack1.is(itemstack2.getItem()) || !itemstack1.isDamageableItem())) {
 						pEntity.itemHandler.setStackInSlot(2, ItemStack.EMPTY);

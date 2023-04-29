@@ -9,7 +9,8 @@
 
   "item_group.randomizedminecraftmod.randomizedminecraftmod": "Randomized Minecraft",
   
-  "container.repair.randomizedminecraftmod.cost": "Commission Cost: %1$s",
+  "randomizedminecraftmod.container.repair": "Currency Anvil",
+  "randomizedminecraftmod.container.repair.cost": "Commission Cost: %1$s",
 
   "message.randomizedminecraftmod.increase_currency": "Currency increased!",
   "message.randomizedminecraftmod.decrease_currency": "Currency decreased!"

@@ -3,6 +3,7 @@ package net.nerdshelf.randomizedminecraft.block.custom;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
@@ -20,10 +22,10 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import net.nerdshelf.randomizedminecraft.block.entity.CurrencyAnvilBlockEntity;
@@ -31,18 +33,19 @@ import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
 
 public class CurrencyAnvilBlock extends BaseEntityBlock {
 
-	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+	private static final VoxelShape BASE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 4.0D, 14.0D);
+	private static final VoxelShape X_LEG1 = Block.box(3.0D, 4.0D, 4.0D, 13.0D, 5.0D, 12.0D);
+	private static final VoxelShape X_LEG2 = Block.box(4.0D, 5.0D, 6.0D, 12.0D, 10.0D, 10.0D);
+	private static final VoxelShape X_TOP = Block.box(0.0D, 10.0D, 3.0D, 16.0D, 16.0D, 13.0D);
+	private static final VoxelShape Z_LEG1 = Block.box(4.0D, 4.0D, 3.0D, 12.0D, 5.0D, 13.0D);
+	private static final VoxelShape Z_LEG2 = Block.box(6.0D, 5.0D, 4.0D, 10.0D, 10.0D, 12.0D);
+	private static final VoxelShape Z_TOP = Block.box(3.0D, 10.0D, 0.0D, 13.0D, 16.0D, 16.0D);
+	private static final VoxelShape X_AXIS_AABB = Shapes.or(BASE, X_LEG1, X_LEG2, X_TOP);
+	private static final VoxelShape Z_AXIS_AABB = Shapes.or(BASE, Z_LEG1, Z_LEG2, Z_TOP);
 
 	public CurrencyAnvilBlock(Properties properties) {
 		super(properties);
-	}
-
-	private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 10, 16);
-
-	@Override
-	public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_,
-			CollisionContext p_60558_) {
-		return SHAPE;
 	}
 
 	@Override
@@ -51,8 +54,30 @@ public class CurrencyAnvilBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState pState, Rotation pRotation) {
-		return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
+	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
+			BlockHitResult pHit) {
+		if (!pLevel.isClientSide()) {
+			BlockEntity entity = pLevel.getBlockEntity(pPos);
+			if (entity instanceof CurrencyAnvilBlockEntity) {
+				NetworkHooks.openScreen(((ServerPlayer) pPlayer), (CurrencyAnvilBlockEntity) entity, pPos);
+			} else {
+				throw new IllegalStateException("Our Container provider is missing!");
+			}
+		}
+
+		return InteractionResult.sidedSuccess(pLevel.isClientSide());
+	}
+
+	@Override
+	public VoxelShape getShape(BlockState p_48816_, BlockGetter p_48817_, BlockPos p_48818_,
+			CollisionContext p_48819_) {
+		Direction direction = p_48816_.getValue(FACING);
+		return direction.getAxis() == Direction.Axis.X ? Z_AXIS_AABB : X_AXIS_AABB;
+	}
+
+	@Override
+	public BlockState rotate(BlockState p_48811_, Rotation p_48812_) {
+		return p_48811_.setValue(FACING, p_48812_.rotate(p_48811_.getValue(FACING)));
 	}
 
 	@Override
@@ -61,8 +86,8 @@ public class CurrencyAnvilBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(FACING);
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_48814_) {
+		p_48814_.add(FACING);
 	}
 
 	/* BLOCK ENTITY */
@@ -81,21 +106,6 @@ public class CurrencyAnvilBlock extends BaseEntityBlock {
 			}
 		}
 		super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-	}
-
-	@Override
-	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
-			BlockHitResult pHit) {
-		if (!pLevel.isClientSide()) {
-			BlockEntity entity = pLevel.getBlockEntity(pPos);
-			if (entity instanceof CurrencyAnvilBlockEntity) {
-				NetworkHooks.openScreen(((ServerPlayer) pPlayer), (CurrencyAnvilBlockEntity) entity, pPos);
-			} else {
-				throw new IllegalStateException("Our Container provider is missing!");
-			}
-		}
-
-		return InteractionResult.sidedSuccess(pLevel.isClientSide());
 	}
 
 	@Nullable

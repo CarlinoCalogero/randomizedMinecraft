@@ -47,7 +47,7 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 		// Add widgets and precomputed values
 		int x = (this.width - imageWidth) / 2;
 		int y = (this.height - imageHeight) / 2;
-		this.name = new EditBox(this.font, x + 62, y + 24, 103, 12, Component.translatable("container.repair"));
+		this.name = new EditBox(this.font, x + 62, y + 24, 103, 12, Component.translatable("randomizedminecraftmod.container.repair"));
 		this.name.setCanLoseFocus(false);
 		this.name.setTextColor(-1);
 		this.name.setTextColorUneditable(-1);
@@ -93,7 +93,7 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 			if (this.menu.isSlot2Empty() && !this.menu.isWasCraftedButPlayerCouldNotAfford()) {
 				component = null;
 			} else {
-				component = Component.translatable("container.repair.randomizedminecraftmod.cost", i);
+				component = Component.translatable("randomizedminecraftmod.container.repair.cost", i);
 				if (!this.menu.customMayPickup(this.player)) {
 					j = 16736352;
 				}
