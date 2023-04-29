@@ -4,6 +4,7 @@ import java.util.List;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,6 +45,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CreativeModeTabEvent;
@@ -232,13 +236,16 @@ public class ModEvents {
 		@SubscribeEvent
 		public static void replaceAnvil(EntityPlaceEvent event) {
 
-//			if (event.getPlacedBlock().getBlock() instanceof AnvilBlock
-//					&& !(event.getPlacedBlock().getBlock() instanceof CustomAnvilBlock)) {
-//				if (!event.getEntity().getLevel().isClientSide()) {
-//					System.out.println("Anvil replaced");
-//					event.getLevel().setBlock(event.getPos(), ModBlocks.JUMPY_BLOCK.get().defaultBlockState(), 0);
-//				}
-//			}
+			if (event.getPlacedBlock().getBlock() instanceof AnvilBlock) {
+				if (!event.getEntity().getLevel().isClientSide()) {
+					BlockState blockState = ModBlocks.CURRENCY_ANVIL.get().defaultBlockState();
+					Direction entityDirection = event.getEntity().getDirection();
+					if (entityDirection == Direction.EAST || entityDirection == Direction.WEST) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_90);
+					}
+					event.getLevel().setBlock(event.getPos(), blockState, 0);
+				}
+			}
 
 		}
 

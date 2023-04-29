@@ -3,6 +3,7 @@ package net.nerdshelf.randomizedminecraft.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -18,6 +19,7 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation(RandomizedMinecraftMod.MOD_ID,
 			"textures/gui/currency_anvil_gui.png");
+	private static final Component CONTAINER_TITLE = Component.translatable("randomizedminecraftmod.container.repair");
 
 	EditBox name;
 	private final Player player;
@@ -47,7 +49,8 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 		// Add widgets and precomputed values
 		int x = (this.width - imageWidth) / 2;
 		int y = (this.height - imageHeight) / 2;
-		this.name = new EditBox(this.font, x + 62, y + 24, 103, 12, Component.translatable("randomizedminecraftmod.container.repair"));
+		this.name = new EditBox(this.font, x + 62, y + 24, 103, 12,
+				Component.translatable("randomizedminecraftmod.container.repair"));
 		this.name.setCanLoseFocus(false);
 		this.name.setTextColor(-1);
 		this.name.setTextColorUneditable(-1);
@@ -106,6 +109,10 @@ public class CurrencyAnvilScreen extends AbstractContainerScreen<CurrencyAnvilMe
 				this.font.drawShadow(p_97890_, component, (float) k, 69.0F, j);
 			}
 		}
+
+		// Renders "Repair & Name" text
+		int k = this.imageWidth - 44 - this.font.width(CONTAINER_TITLE) - 2;
+		this.font.drawShadow(p_97890_, CONTAINER_TITLE, (float) k, 5.0F, 10000536);
 
 	}
 

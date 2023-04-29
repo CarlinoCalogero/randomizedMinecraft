@@ -39,8 +39,6 @@ import net.nerdshelf.randomizedminecraft.screen.CurrencyAnvilMenu;
 
 public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvider {
 
-	private static final Component CONTAINER_TITLE = Component.translatable("randomizedminecraftmod.container.repair");
-
 	// it's basically the inventory of the block entity
 	private final ItemStackHandler itemHandler = new ItemStackHandler(3) {
 		@Override
@@ -106,7 +104,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 	@Override
 	public Component getDisplayName() {
-		return CONTAINER_TITLE;
+		return Component.literal("");
 	}
 
 	@Nullable
@@ -220,9 +218,8 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
 					&& (pEntity.itemHandler.getStackInSlot(1) == ItemStack.EMPTY)
 					&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-				System.out.println("1 0 0");
+				// System.out.println("1 0 0");
 				if (pEntity.isCrafted == 1) {
-					System.out.println("-------------------------------");
 					onTake(pEntity);
 				}
 			}
@@ -231,9 +228,8 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 			if ((pEntity.itemHandler.getStackInSlot(0) != ItemStack.EMPTY)
 					&& (pEntity.itemHandler.getStackInSlot(1) != ItemStack.EMPTY)
 					&& (pEntity.itemHandler.getStackInSlot(2) == ItemStack.EMPTY)) {
-				System.out.println("1 1 0");
+				// System.out.println("1 1 0");
 				if (pEntity.isCrafted == 1) {
-					System.out.println("-------------------------------");
 					onTake(pEntity);
 				}
 			}
@@ -469,8 +465,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 	public void setItemName(String name) {
 
-		System.out.println("SetItemName: " + name);
-
 		String newName = name;
 		ItemStack itemStack = this.itemHandler.getStackInSlot(0);
 		if (itemStack != null && (itemStack != ItemStack.EMPTY) && !itemStack.hasCustomHoverName()
@@ -479,8 +473,6 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 		}
 
 		CurrencyAnvilBlockEntity.itemName = newName;
-
-		System.out.println("InsideItemName: " + name);
 
 		if (this.itemHandler.getStackInSlot(2) != ItemStack.EMPTY) {
 			ItemStack itemstack = this.itemHandler.getStackInSlot(2);
