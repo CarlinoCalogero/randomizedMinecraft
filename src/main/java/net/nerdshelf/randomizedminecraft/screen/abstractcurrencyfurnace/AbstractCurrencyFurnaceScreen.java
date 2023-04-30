@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.recipebook.AbstractFurnaceRecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.renderer.GameRenderer;
@@ -16,18 +15,19 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.nerdshelf.randomizedminecraft.recipe.AbstractCurrencyFurnaceRecipeBookComponent;
 
 @OnlyIn(Dist.CLIENT)
 public class AbstractCurrencyFurnaceScreen<T extends AbstractCurrencyFurnaceMenu> extends AbstractContainerScreen<T>
 		implements RecipeUpdateListener {
 	private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation(
 			"textures/gui/recipe_button.png");
-	public final AbstractFurnaceRecipeBookComponent recipeBookComponent;
+	public final AbstractCurrencyFurnaceRecipeBookComponent recipeBookComponent;
 	private boolean widthTooNarrow;
 	private final ResourceLocation texture;
 
-	public AbstractCurrencyFurnaceScreen(T p_97825_, AbstractFurnaceRecipeBookComponent p_97826_, Inventory p_97827_,
-			Component p_97828_, ResourceLocation p_97829_) {
+	public AbstractCurrencyFurnaceScreen(T p_97825_, AbstractCurrencyFurnaceRecipeBookComponent p_97826_,
+			Inventory p_97827_, Component p_97828_, ResourceLocation p_97829_) {
 		super(p_97825_, p_97827_, p_97828_);
 		this.recipeBookComponent = p_97826_;
 		this.texture = p_97829_;
