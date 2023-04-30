@@ -46,7 +46,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.BlastFurnaceBlock;
+import net.minecraft.world.level.block.FurnaceBlock;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SmokerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -234,7 +237,7 @@ public class ModEvents {
 		}
 
 		@SubscribeEvent
-		public static void replaceAnvil(EntityPlaceEvent event) {
+		public static void replaceBlockOnPlace(EntityPlaceEvent event) {
 
 			if (event.getPlacedBlock().getBlock() instanceof AnvilBlock) {
 				if (!event.getEntity().getLevel().isClientSide()) {
@@ -242,6 +245,57 @@ public class ModEvents {
 					Direction entityDirection = event.getEntity().getDirection();
 					if (entityDirection == Direction.EAST || entityDirection == Direction.WEST) {
 						blockState = blockState.rotate(Rotation.CLOCKWISE_90);
+					}
+					event.getLevel().setBlock(event.getPos(), blockState, 0);
+				}
+			}
+
+			if (event.getPlacedBlock().getBlock() instanceof FurnaceBlock) {
+				if (!event.getEntity().getLevel().isClientSide()) {
+					BlockState blockState = ModBlocks.CURRENCY_FURNACE.get().defaultBlockState();
+					Direction entityDirection = event.getEntity().getDirection();
+					if (entityDirection == Direction.WEST) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_90);
+					}
+					if (entityDirection == Direction.EAST) {
+						blockState = blockState.rotate(Rotation.COUNTERCLOCKWISE_90);
+					}
+					if (entityDirection == Direction.NORTH) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_180);
+					}
+					event.getLevel().setBlock(event.getPos(), blockState, 0);
+				}
+			}
+
+			if (event.getPlacedBlock().getBlock() instanceof BlastFurnaceBlock) {
+				if (!event.getEntity().getLevel().isClientSide()) {
+					BlockState blockState = ModBlocks.CURRENCY_BLAST_FURNACE.get().defaultBlockState();
+					Direction entityDirection = event.getEntity().getDirection();
+					if (entityDirection == Direction.WEST) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_90);
+					}
+					if (entityDirection == Direction.EAST) {
+						blockState = blockState.rotate(Rotation.COUNTERCLOCKWISE_90);
+					}
+					if (entityDirection == Direction.NORTH) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_180);
+					}
+					event.getLevel().setBlock(event.getPos(), blockState, 0);
+				}
+			}
+
+			if (event.getPlacedBlock().getBlock() instanceof SmokerBlock) {
+				if (!event.getEntity().getLevel().isClientSide()) {
+					BlockState blockState = ModBlocks.CURRENCY_SMOKER.get().defaultBlockState();
+					Direction entityDirection = event.getEntity().getDirection();
+					if (entityDirection == Direction.WEST) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_90);
+					}
+					if (entityDirection == Direction.EAST) {
+						blockState = blockState.rotate(Rotation.COUNTERCLOCKWISE_90);
+					}
+					if (entityDirection == Direction.NORTH) {
+						blockState = blockState.rotate(Rotation.CLOCKWISE_180);
 					}
 					event.getLevel().setBlock(event.getPos(), blockState, 0);
 				}
@@ -489,6 +543,7 @@ public class ModEvents {
 								populator.accept(ModBlocks.CURRENCY_ANVIL.get());
 								populator.accept(ModBlocks.CURRENCY_FURNACE.get());
 								populator.accept(ModBlocks.CURRENCY_BLAST_FURNACE.get());
+								populator.accept(ModBlocks.CURRENCY_SMOKER.get());
 							}));
 		}
 

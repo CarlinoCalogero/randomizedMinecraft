@@ -5,7 +5,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.nerdshelf.randomizedminecraft.block.custom.currencyfurnaceblock.AbstractCurrencyFurnaceBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.AbstractCurrencyFurnaceBlockEntity;
 
 public class CurrencyFurnaceResultSlot extends Slot {
 	private final Player player;

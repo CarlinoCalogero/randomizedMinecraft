@@ -1,4 +1,4 @@
-package net.nerdshelf.randomizedminecraft.block.custom.currencyfurnaceblock;
+package net.nerdshelf.randomizedminecraft.block.custom;
 
 import javax.annotation.Nullable;
 
@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.nerdshelf.randomizedminecraft.block.entity.AbstractCurrencyFurnaceBlockEntity;
 
 public abstract class AbstractCurrencyFurnaceBlock extends BaseEntityBlock {
 	public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;

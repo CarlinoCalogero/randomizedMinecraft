@@ -6,7 +6,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.nerdshelf.randomizedminecraft.block.custom.currencyfurnaceblock.AbstractCurrencyFurnaceBlockEntity;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyFurnaceMenu;
 
 public class CurrencyFurnaceBlockEntity extends AbstractCurrencyFurnaceBlockEntity {

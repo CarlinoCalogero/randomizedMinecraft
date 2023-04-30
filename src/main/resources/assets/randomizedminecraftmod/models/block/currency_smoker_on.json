@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "randomizedminecraftmod:block/currency_smoker_bottom",
+    "front": "randomizedminecraftmod:block/currency_smoker_front_on",
+    "side": "randomizedminecraftmod:block/currency_smoker_side",
+    "top": "randomizedminecraftmod:block/currency_smoker_top"
+  }
+}

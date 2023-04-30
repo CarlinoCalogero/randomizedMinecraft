@@ -16,12 +16,15 @@ public class ModMenuTypes {
 
 	public static final RegistryObject<MenuType<CurrencyAnvilMenu>> CURRENCY_ANVIL_MENU = registerMenuType(
 			CurrencyAnvilMenu::new, "currency_anvil_menu");
-	
+
 	public static final RegistryObject<MenuType<CurrencyFurnaceMenu>> CURRENCY_FURNACE_MENU = registerMenuType(
 			CurrencyFurnaceMenu::new, "currency_furnace_menu");
-	
+
 	public static final RegistryObject<MenuType<CurrencyBlastFurnaceMenu>> CURRENCY_BLAST_FURNACE_MENU = registerMenuType(
 			CurrencyBlastFurnaceMenu::new, "currency_blast_furnace_menu");
+
+	public static final RegistryObject<MenuType<CurrencySmokerMenu>> CURRENCY_SMOKER_MENU = registerMenuType(
+			CurrencySmokerMenu::new, "currency_smoker_menu");
 
 	private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(
 			IContainerFactory<T> factory, String name) {

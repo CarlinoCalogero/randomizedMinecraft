@@ -9,7 +9,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.nerdshelf.randomizedminecraft.screen.abstractcurrencyfurnace.AbstractCurrencyFurnaceMenu;
 
 public class CurrencyFurnaceMenu extends AbstractCurrencyFurnaceMenu {
-
 	public CurrencyFurnaceMenu(int p_39532_, Inventory p_39533_) {
 		super(ModMenuTypes.CURRENCY_FURNACE_MENU.get(), RecipeType.SMELTING, RecipeBookType.FURNACE, p_39532_,
 				p_39533_);

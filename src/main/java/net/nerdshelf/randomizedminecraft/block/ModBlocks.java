@@ -20,6 +20,7 @@ import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
 import net.nerdshelf.randomizedminecraft.block.custom.CurrencyAnvilBlock;
 import net.nerdshelf.randomizedminecraft.block.custom.CurrencyBlastFurnaceBlock;
 import net.nerdshelf.randomizedminecraft.block.custom.CurrencyFurnaceBlock;
+import net.nerdshelf.randomizedminecraft.block.custom.CurrencySmokerBlock;
 import net.nerdshelf.randomizedminecraft.block.custom.JumpyBlock;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 
@@ -45,6 +46,10 @@ public class ModBlocks {
 	public static final RegistryObject<Block> CURRENCY_BLAST_FURNACE = registerBlock("currency_blast_furnace",
 			() -> new CurrencyBlastFurnaceBlock(BlockBehaviour.Properties.of(Material.STONE)
 					.requiresCorrectToolForDrops().strength(3.5F).lightLevel(litBlockEmission(13))));
+
+	public static final RegistryObject<Block> CURRENCY_SMOKER = registerBlock("currency_smoker",
+			() -> new CurrencySmokerBlock(BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops()
+					.strength(3.5F).lightLevel(litBlockEmission(13))));
 
 	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
 		RegistryObject<T> toReturn = BLOCKS.register(name, block);

@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.nerdshelf.randomizedminecraft.block.custom.currencyfurnaceblock.AbstractCurrencyFurnaceBlock;
 import net.nerdshelf.randomizedminecraft.block.entity.CurrencyFurnaceBlockEntity;
 import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
 

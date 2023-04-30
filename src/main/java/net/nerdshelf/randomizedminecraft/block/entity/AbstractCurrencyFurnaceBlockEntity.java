@@ -1,4 +1,4 @@
-package net.nerdshelf.randomizedminecraft.block.custom.currencyfurnaceblock;
+package net.nerdshelf.randomizedminecraft.block.entity;
 
 import java.util.List;
 import java.util.Map;

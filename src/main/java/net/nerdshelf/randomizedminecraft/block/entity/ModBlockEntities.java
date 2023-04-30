@@ -23,6 +23,10 @@ public class ModBlockEntities {
 	public static final RegistryObject<BlockEntityType<CurrencyBlastFurnaceBlockEntity>> CURRENCY_BLAST_FURNACE = BLOCK_ENTITIES
 			.register("currency_blast_furnace", () -> BlockEntityType.Builder
 					.of(CurrencyBlastFurnaceBlockEntity::new, ModBlocks.CURRENCY_BLAST_FURNACE.get()).build(null));
+	
+	public static final RegistryObject<BlockEntityType<CurrencySmokerBlockEntity>> CURRENCY_SMOKER = BLOCK_ENTITIES
+			.register("currency_smoker", () -> BlockEntityType.Builder
+					.of(CurrencySmokerBlockEntity::new, ModBlocks.CURRENCY_BLAST_FURNACE.get()).build(null));
 
 	public static void register(IEventBus eventBus) {
 		BLOCK_ENTITIES.register(eventBus);
