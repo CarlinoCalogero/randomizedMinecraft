@@ -488,6 +488,7 @@ public class ModEvents {
 								populator.accept(ModBlocks.JUMPY_BLOCK.get());
 								populator.accept(ModBlocks.CURRENCY_ANVIL.get());
 								populator.accept(ModBlocks.CURRENCY_FURNACE.get());
+								populator.accept(ModBlocks.CURRENCY_BLAST_FURNACE.get());
 							}));
 		}
 

@@ -14,6 +14,7 @@ import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyAnvilScreen;
+import net.nerdshelf.randomizedminecraft.screen.CurrencyBlastFurnaceScreen;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyFurnaceScreen;
 import net.nerdshelf.randomizedminecraft.screen.ModMenuTypes;
 import net.nerdshelf.randomizedminecraft.villager.ModVillagers;
@@ -70,6 +71,7 @@ public class RandomizedMinecraftMod {
 
 			MenuScreens.register(ModMenuTypes.CURRENCY_ANVIL_MENU.get(), CurrencyAnvilScreen::new);
 			MenuScreens.register(ModMenuTypes.CURRENCY_FURNACE_MENU.get(), CurrencyFurnaceScreen::new);
+			MenuScreens.register(ModMenuTypes.CURRENCY_BLAST_FURNACE_MENU.get(), CurrencyBlastFurnaceScreen::new);
 		}
 	}
 }
