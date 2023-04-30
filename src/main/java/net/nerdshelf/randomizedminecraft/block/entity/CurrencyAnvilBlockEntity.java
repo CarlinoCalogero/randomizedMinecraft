@@ -275,7 +275,7 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 
 	public static void createResult(CurrencyAnvilBlockEntity pEntity) {
 		ItemStack itemstack = pEntity.itemHandler.getStackInSlot(0);
-		pEntity.cost = 1;
+		pEntity.cost = 10;
 		int i = 0;
 		int j = 0;
 		int k = 0;
@@ -420,13 +420,13 @@ public class CurrencyAnvilBlockEntity extends BlockEntity implements MenuProvide
 				itemstack1 = ItemStack.EMPTY;
 			}
 
-			pEntity.cost = j + i;
+			pEntity.cost = (j + i) * 10;
 			if (i <= 0) {
 				itemstack1 = ItemStack.EMPTY;
 			}
 
 			if (k == i && k > 0 && pEntity.data.get(0) >= 40) {
-				pEntity.cost = 39;
+				pEntity.cost = 390;
 			}
 
 			if (!itemstack1.isEmpty()) {
