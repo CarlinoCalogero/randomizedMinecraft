@@ -16,6 +16,9 @@ public class ModMenuTypes {
 
 	public static final RegistryObject<MenuType<CurrencyAnvilMenu>> CURRENCY_ANVIL_MENU = registerMenuType(
 			CurrencyAnvilMenu::new, "currency_anvil_menu");
+	
+	public static final RegistryObject<MenuType<CurrencyFurnaceMenu>> CURRENCY_FURNACE_MENU = registerMenuType(
+			CurrencyFurnaceMenu::new, "currency_furnace_menu");
 
 	private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(
 			IContainerFactory<T> factory, String name) {
