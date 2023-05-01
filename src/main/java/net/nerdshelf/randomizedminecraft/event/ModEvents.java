@@ -303,6 +303,27 @@ public class ModEvents {
 
 		}
 
+		/**
+		 * Decreases Player currency by 20% on Player's death
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void onPlayerDeath(LivingDeathEvent event) {
+
+			if (event.getEntity().getLevel().isClientSide()) {
+				return;
+			}
+
+			Entity entity = event.getEntity();
+			if (entity instanceof Player) {
+				System.out.println("Player died");
+				entity.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) -(0.2 * currency.getCurrency())));
+				});
+			}
+
+		}
+
 		/***
 		 * Increases player currency by x value when a certain entity is killed
 		 * 
