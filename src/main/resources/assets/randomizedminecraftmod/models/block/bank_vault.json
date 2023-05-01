@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "randomizedminecraftmod:block/bank_vault_front",
+    "side": "randomizedminecraftmod:block/bank_vault_side",
+    "top": "randomizedminecraftmod:block/bank_vault_top"
+  }
+}

@@ -393,7 +393,7 @@ public class ModEvents {
 		/**
 		 * Extracts a pattern from a string
 		 * 
-		 * @param string is the string inside which the pattern must be found
+		 * @param string  is the string inside which the pattern must be found
 		 * @param pattern is the pattern that we are searching for
 		 * @return a String representing the pattern found
 		 * @throws Exception
@@ -417,7 +417,7 @@ public class ModEvents {
 		 * Checks if harvested crop is at MaxAge
 		 * 
 		 * @param blockState is the crop that is being harvested
-		 * @param maxAge is Crop MaxAge
+		 * @param maxAge     is Crop MaxAge
 		 * @return true if the crop is at MaxAge, false otherwise
 		 */
 		private static boolean isCropAtMaxAge(BlockState blockState, int maxAge) {
@@ -535,9 +535,10 @@ public class ModEvents {
 		}
 
 		/**
-		 * Gives a name to killed mob to represent the currency earned by the player and also gives currency to the player
+		 * Gives a name to killed mob to represent the currency earned by the player and
+		 * also gives currency to the player
 		 * 
-		 * @param x is amount to be added to player current currency
+		 * @param x      is amount to be added to player current currency
 		 * @param entity is mob killed
 		 */
 		private static void handleMobKill(int x, LivingEntity entity) {
@@ -550,6 +551,7 @@ public class ModEvents {
 
 		/**
 		 * Increases player currency by x value when a certain entity is killed
+		 * 
 		 * @param event
 		 */
 		@SubscribeEvent
@@ -779,6 +781,7 @@ public class ModEvents {
 								populator.accept(ModBlocks.CURRENCY_FURNACE.get());
 								populator.accept(ModBlocks.CURRENCY_BLAST_FURNACE.get());
 								populator.accept(ModBlocks.CURRENCY_SMOKER.get());
+								populator.accept(ModBlocks.BANK_VAULT.get());
 							}));
 		}
 

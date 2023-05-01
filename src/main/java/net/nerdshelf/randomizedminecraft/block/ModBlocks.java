@@ -17,6 +17,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
+import net.nerdshelf.randomizedminecraft.block.custom.BankVaultBlock;
 import net.nerdshelf.randomizedminecraft.block.custom.CurrencyAnvilBlock;
 import net.nerdshelf.randomizedminecraft.block.custom.CurrencyBlastFurnaceBlock;
 import net.nerdshelf.randomizedminecraft.block.custom.CurrencyFurnaceBlock;
@@ -33,6 +34,9 @@ public class ModBlocks {
 			() -> new Block(BlockBehaviour.Properties.of(Material.STONE).strength(6f).requiresCorrectToolForDrops()));
 
 	public static final RegistryObject<Block> JUMPY_BLOCK = registerBlock("jumpy_block", () -> new JumpyBlock(
+			BlockBehaviour.Properties.of(Material.STONE).strength(6f).requiresCorrectToolForDrops()));
+
+	public static final RegistryObject<Block> BANK_VAULT = registerBlock("bank_vault", () -> new BankVaultBlock(
 			BlockBehaviour.Properties.of(Material.STONE).strength(6f).requiresCorrectToolForDrops()));
 
 	public static final RegistryObject<Block> CURRENCY_ANVIL = registerBlock("currency_anvil",
