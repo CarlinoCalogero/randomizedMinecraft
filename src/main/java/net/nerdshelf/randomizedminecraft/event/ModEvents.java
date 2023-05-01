@@ -45,6 +45,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.BlastFurnaceBlock;
 import net.minecraft.world.level.block.FurnaceBlock;
@@ -57,6 +58,7 @@ import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -108,37 +110,50 @@ public class ModEvents {
 
 		@SubscribeEvent
 		public static void onPlayerCloned(PlayerEvent.Clone event) {
-			if (event.isWasDeath()) {
 
+			/***
+			 * `event.getOriginal()` gets the data of the player entity before dying, but
+			 * `invalidateCaps()` (which deletes all capabilities) is called when the player
+			 * dies. So if we don't call `event.getOriginal().reviveCaps()` before accessing
+			 * the player's capabilities we get `null`. ReviveCaps gets the old values of
+			 * the capabilities registered with the player entity. At the same time we
+			 * should call `event.getOriginal().invalidateCaps()` after accessing the old
+			 * values of the capabilities to invalidate the old capabilities and use the new
+			 * ones.
+			 */
+			event.getOriginal().reviveCaps();
+			event.getOriginal().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(oldStore -> {
 				/***
-				 * `event.getOriginal()` gets the data of the player entity before dying, but
-				 * `invalidateCaps()` (which deletes all capabilities) is called when the player
-				 * dies. So if we don't call `event.getOriginal().reviveCaps()` before accessing
-				 * the player's capabilities we get `null`. ReviveCaps gets the old values of
-				 * the capabilities registered with the player entity. At the same time we
-				 * should call `event.getOriginal().invalidateCaps()` after accessing the old
-				 * values of the capabilities to invalidate the old capabilities and use the new
-				 * ones.
+				 * `event.getEntity()` gets the newly cloned player (respawned player), and we
+				 * must use this method to access the `newStore` instead of
+				 * `event.getOriginal()`, that gets the player's entity before dying, because we
+				 * have to overwrite the default value (`newStore.currency = 0`) with the old
+				 * one inside of `oldStore` with `copyFrom`.
 				 */
-				event.getOriginal().reviveCaps();
-				event.getOriginal().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(oldStore -> {
-					/***
-					 * `event.getEntity()` gets the newly cloned player (respawned player), and we
-					 * must use this method to access the `newStore` instead of
-					 * `event.getOriginal()`, that gets the player's entity before dying, because we
-					 * have to overwrite the default value (`newStore.currency = 0`) with the old
-					 * one inside of `oldStore` with `copyFrom`.
-					 */
-					event.getEntity().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(newStore -> {
-						newStore.copyCurrencyFrom(oldStore);
-					});
+				event.getEntity().getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(newStore -> {
+					newStore.copyCurrencyFrom(oldStore);
 				});
-				/***
-				 * call `event.getOriginal().invalidateCaps()` after accessing the old values of
-				 * the capabilities to invalidate the old capabilities and use the new ones.
-				 */
-				event.getOriginal().invalidateCaps();
+			});
+			/***
+			 * call `event.getOriginal().invalidateCaps()` after accessing the old values of
+			 * the capabilities to invalidate the old capabilities and use the new ones.
+			 */
+			event.getOriginal().invalidateCaps();
+
+			/* [START] - Decrease player currency if player is coming back from the end */
+			Entity entity = event.getEntity();
+
+			if (entity.getLevel().isClientSide()) {
+				return;
 			}
+
+			if (event.getOriginal().getLevel().dimension() == Level.END && entity instanceof Player) {
+				entity.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) -(0.5 * currency.getCurrency())));
+				});
+			}
+			/* [END] - Decrease player currency if player is coming back from the end */
+
 		}
 
 		@SubscribeEvent
@@ -304,21 +319,56 @@ public class ModEvents {
 		}
 
 		/**
-		 * Decreases Player currency by 20% on Player's death
+		 * Decreases player's currency by 20% on Player's death
+		 * 
 		 * @param event
 		 */
 		@SubscribeEvent
 		public static void onPlayerDeath(LivingDeathEvent event) {
 
-			if (event.getEntity().getLevel().isClientSide()) {
+			Entity entity = event.getEntity();
+
+			if (entity.getLevel().isClientSide()) {
 				return;
 			}
 
-			Entity entity = event.getEntity();
 			if (entity instanceof Player) {
-				System.out.println("Player died");
 				entity.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
 					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) -(0.2 * currency.getCurrency())));
+				});
+			}
+
+		}
+
+		/**
+		 * Decreases player's currency by 20% if player is going to/coming back from the NETHER
+		 * Decreases player's currency by 50% if player is going to the END
+		 * If searching for the method that decreases player's currency by 50% if player is coming back from the END see {@link net.nerdshelf.randomizedminecraft.event.ModEvents.ForgeEvents#onPlayerCloned()}
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void onPlayerChangedDimension(PlayerChangedDimensionEvent event) {
+
+			Entity entity = event.getEntity();
+
+			if (entity.getLevel().isClientSide()) {
+				return;
+			}
+
+			if (entity instanceof Player) {
+				entity.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+
+					if (event.getFrom().toString().equalsIgnoreCase(Level.NETHER.toString())
+							|| event.getTo().toString().equalsIgnoreCase(Level.NETHER.toString())) {
+						ModMessages
+								.sendToServer(new CurrencyManagementC2SPacket((int) -(0.2 * currency.getCurrency())));
+					}
+
+					if (event.getTo().toString().equalsIgnoreCase(Level.END.toString())) {
+						ModMessages
+								.sendToServer(new CurrencyManagementC2SPacket((int) -(0.5 * currency.getCurrency())));
+					}
+
 				});
 			}
 
