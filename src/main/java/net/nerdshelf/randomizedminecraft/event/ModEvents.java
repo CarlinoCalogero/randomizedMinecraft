@@ -1,6 +1,8 @@
 package net.nerdshelf.randomizedminecraft.event;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.ChatFormatting;
@@ -48,7 +50,12 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.BlastFurnaceBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CocoaBlock;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FurnaceBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SmokerBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -60,6 +67,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
+import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -140,7 +148,10 @@ public class ModEvents {
 			 */
 			event.getOriginal().invalidateCaps();
 
-			/* [START] - Decrease player currency by 50% if player is coming back from the END */
+			/*
+			 * [START] - Decrease player currency by 50% if player is coming back from the
+			 * END
+			 */
 			Entity entity = event.getEntity();
 
 			if (entity.getLevel().isClientSide()) {
@@ -152,7 +163,9 @@ public class ModEvents {
 					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) -(0.5 * currency.getCurrency())));
 				});
 			}
-			/* [END] - Decrease player currency by 50% if player is coming back from the END */
+			/*
+			 * [END] - Decrease player currency by 50% if player is coming back from the END
+			 */
 
 		}
 
@@ -341,9 +354,12 @@ public class ModEvents {
 		}
 
 		/**
-		 * Decreases player's currency by 20% if player is going to/coming back from the NETHER
-		 * Decreases player's currency by 50% if player is going to the END
-		 * If searching for the method that decreases player's currency by 50% if player is coming back from the END see {@link net.nerdshelf.randomizedminecraft.event.ModEvents.ForgeEvents#onPlayerCloned()}
+		 * Decreases player's currency by 20% if player is going to/coming back from the
+		 * NETHER Decreases player's currency by 50% if player is going to the END If
+		 * searching for the method that decreases player's currency by 50% if player is
+		 * coming back from the END see
+		 * {@link net.nerdshelf.randomizedminecraft.event.ModEvents.ForgeEvents#onPlayerCloned()}
+		 * 
 		 * @param event
 		 */
 		@SubscribeEvent
@@ -374,11 +390,155 @@ public class ModEvents {
 
 		}
 
-		/***
-		 * Increases player currency by x value when a certain entity is killed
+		/**
+		 * Extracts a pattern from a string
 		 * 
-		 * @param x
-		 * @param entity
+		 * @param string is the string inside which the pattern must be found
+		 * @param pattern is the pattern that we are searching for
+		 * @return a String representing the pattern found
+		 * @throws Exception
+		 */
+		private static String findPattern(String string, String pattern) throws Exception {
+
+			try {
+
+				Matcher matcher = Pattern.compile(pattern).matcher(string);
+				matcher.find();
+				return matcher.group();
+
+			} catch (Exception e) {
+				// String does not contain the pattern
+				throw new Exception();
+			}
+
+		}
+
+		/**
+		 * Checks if harvested crop is at MaxAge
+		 * 
+		 * @param blockState is the crop that is being harvested
+		 * @param maxAge is Crop MaxAge
+		 * @return true if the crop is at MaxAge, false otherwise
+		 */
+		private static boolean isCropAtMaxAge(BlockState blockState, int maxAge) {
+
+			try {
+
+				String string = blockState.toString();
+
+				String agePattern = "age=[0-9]+";
+				String numberPattern = "\\d+";
+
+				string = findPattern(string, agePattern);
+				string = findPattern(string, numberPattern);
+
+				int age = Integer.valueOf(string);
+				return age == maxAge;
+
+			} catch (Exception e) {
+				System.out.println("no pattern found");
+				return false;
+			}
+
+		}
+
+		/**
+		 * Player earns currency when breaking a block that, normally, would have given
+		 * experience Player earns specific currency when harvesting crops
+		 * 
+		 * @param event
+		 */
+		@SubscribeEvent
+		public static void onBreakingBlock(BreakEvent event) {
+
+			Player player = event.getPlayer();
+
+			if (player.getLevel().isClientSide()) {
+				return;
+			}
+
+			if (player instanceof Player) {
+				player.getCapability(PlayerCurrencyProvider.PLAYER_CURRENCY).ifPresent(currency -> {
+
+					int[] amount = { 1, 2, 5, 10, 20, 50 };
+					BlockState blockState = event.getState();
+					Block block = blockState.getBlock();
+
+					if (block == Blocks.WHEAT && ((CropBlock) block).isMaxAge(blockState)) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[0]));
+						return;
+					}
+
+					if (block == Blocks.BEETROOTS && ((CropBlock) block).isMaxAge(blockState)) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[1]));
+						return;
+					}
+
+					if (block == Blocks.CARROTS && ((CropBlock) block).isMaxAge(blockState)) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[1]));
+						return;
+					}
+
+					if (block == Blocks.POTATOES && ((CropBlock) block).isMaxAge(blockState)) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[1]));
+						return;
+					}
+
+					if (block == Blocks.MELON) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[2]));
+						return;
+					}
+
+					if (block == Blocks.PUMPKIN) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[2]));
+						return;
+					}
+
+					if (block == Blocks.BAMBOO) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[1]));
+						return;
+					}
+
+					if (block == Blocks.COCOA && isCropAtMaxAge(blockState, CocoaBlock.MAX_AGE)) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[3]));
+						return;
+					}
+
+					if (block == Blocks.SUGAR_CANE) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[1]));
+						return;
+					}
+
+					if (block == Blocks.CACTUS) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[1]));
+						return;
+					}
+
+					if (block == Blocks.NETHER_WART && isCropAtMaxAge(blockState, NetherWartBlock.MAX_AGE)) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[4]));
+						return;
+					}
+
+					if (block == Blocks.CHORUS_PLANT) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(amount[5]));
+						return;
+					}
+
+					int dropExp = event.getExpToDrop();
+					if (dropExp > 0) {
+						ModMessages.sendToServer(new CurrencyManagementC2SPacket(dropExp * 10));
+					}
+
+				});
+			}
+
+		}
+
+		/**
+		 * Gives a name to killed mob to represent the currency earned by the player and also gives currency to the player
+		 * 
+		 * @param x is amount to be added to player current currency
+		 * @param entity is mob killed
 		 */
 		private static void handleMobKill(int x, LivingEntity entity) {
 			// Show how much currency the player as gained by setting the mob name to the
@@ -388,6 +548,10 @@ public class ModEvents {
 			ModMessages.sendToServer(new CurrencyManagementC2SPacket(x));
 		}
 
+		/**
+		 * Increases player currency by x value when a certain entity is killed
+		 * @param event
+		 */
 		@SubscribeEvent
 		public static void onLivingDeath(LivingDeathEvent event) {
 
