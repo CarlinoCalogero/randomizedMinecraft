@@ -140,7 +140,7 @@ public class ModEvents {
 			 */
 			event.getOriginal().invalidateCaps();
 
-			/* [START] - Decrease player currency if player is coming back from the end */
+			/* [START] - Decrease player currency by 50% if player is coming back from the END */
 			Entity entity = event.getEntity();
 
 			if (entity.getLevel().isClientSide()) {
@@ -152,7 +152,7 @@ public class ModEvents {
 					ModMessages.sendToServer(new CurrencyManagementC2SPacket((int) -(0.5 * currency.getCurrency())));
 				});
 			}
-			/* [END] - Decrease player currency if player is coming back from the end */
+			/* [END] - Decrease player currency by 50% if player is coming back from the END */
 
 		}
 
