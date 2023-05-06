@@ -15,6 +15,8 @@
   
   "randomizedminecraftmod.container.repair": "Repair & Name",
   "randomizedminecraftmod.container.repair.cost": "Commission Cost: %1$s",
+  
+  "randomizedminecraftmod.container.vault": "Bank Vault",
 
   "message.randomizedminecraftmod.increase_currency": "Currency increased!",
   "message.randomizedminecraftmod.decrease_currency": "Currency decreased!"

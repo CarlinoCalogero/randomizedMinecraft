@@ -26,6 +26,9 @@ public class ModMenuTypes {
 	public static final RegistryObject<MenuType<CurrencySmokerMenu>> CURRENCY_SMOKER_MENU = registerMenuType(
 			CurrencySmokerMenu::new, "currency_smoker_menu");
 
+	public static final RegistryObject<MenuType<BankVaultMenu>> BANK_VAULT_MENU = registerMenuType(BankVaultMenu::new,
+			"bank_vault_menu");
+
 	private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(
 			IContainerFactory<T> factory, String name) {
 		return MENUS.register(name, () -> IForgeMenuType.create(factory));
