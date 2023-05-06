@@ -14,6 +14,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,12 +24,18 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.nerdshelf.randomizedminecraft.networking.ModMessages;
+import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
 import net.nerdshelf.randomizedminecraft.screen.BankVaultMenu;
 
 public class BankVaultBlockEntity extends BlockEntity implements MenuProvider {
 
+	private final int numberOfSlots = 21;
+	private static boolean isGuiWasClosed = false;
+	private Player currentPlayer = null;
+
 	// it's basically the inventory of the block entity
-	private final ItemStackHandler itemHandler = new ItemStackHandler(21) {
+	private final ItemStackHandler itemHandler = new ItemStackHandler(numberOfSlots) {
 		@Override
 		protected void onContentsChanged(int slot) {
 			setChanged();
@@ -72,6 +80,7 @@ public class BankVaultBlockEntity extends BlockEntity implements MenuProvider {
 	@Nullable
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+		this.currentPlayer = player;
 		return new BankVaultMenu(id, inventory, this, this.data);
 	}
 
@@ -127,12 +136,40 @@ public class BankVaultBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	public static void tick(Level level, BlockPos pos, BlockState state, BankVaultBlockEntity pEntity) {
+
 		if (level.isClientSide()) {
 			return;
 		}
 
 		setChanged(level, pos, state); // reloads if needed every time we add a progress
 
+		if (BankVaultBlockEntity.isGuiWasClosed) {
+
+			System.out.println("Clearing");
+
+			int numberOfSlots = pEntity.numberOfSlots;
+
+			int currencyToBeGiven = 0;
+
+			for (int i = 0; i < numberOfSlots; i++) {
+
+				ItemStack item = pEntity.itemHandler.getStackInSlot(i);
+
+				if (item.getItem() == Items.DIAMOND) {
+					currencyToBeGiven += item.getCount() * 10;
+				}
+
+				pEntity.itemHandler.setStackInSlot(i, new ItemStack(Items.AIR));
+			}
+
+			ModMessages.sendToServer(new CurrencyManagementC2SPacket(currencyToBeGiven));
+			BankVaultBlockEntity.isGuiWasClosed = false;
+
+		}
+	}
+
+	public void giveCurrency(BankVaultBlockEntity pEntity) {
+		BankVaultBlockEntity.isGuiWasClosed = true;
 	}
 
 }
