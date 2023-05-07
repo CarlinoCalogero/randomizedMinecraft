@@ -145,24 +145,162 @@ public class BankVaultBlockEntity extends BlockEntity implements MenuProvider {
 
 		if (BankVaultBlockEntity.isGuiWasClosed) {
 
-			System.out.println("Clearing");
+			int x = 10;
 
 			int numberOfSlots = pEntity.numberOfSlots;
-
 			int currencyToBeGiven = 0;
 
 			for (int i = 0; i < numberOfSlots; i++) {
 
 				ItemStack item = pEntity.itemHandler.getStackInSlot(i);
 
+				// Rarity coefficient: 101
+				if (item.getItem() == Items.SLIME_BALL) {
+					currencyToBeGiven += item.getCount() * 10 * x;
+				}
+
+				// Rarity coefficient: 119
+				if (item.getItem() == Items.MAGMA_CREAM) {
+					currencyToBeGiven += item.getCount() * 11 * x;
+				}
+
+				// Rarity coefficient: 120
+				if (item.getItem() == Items.IRON_INGOT) {
+					currencyToBeGiven += item.getCount() * 12 * x;
+				}
+
+				// Rarity coefficient: 138
+				if (item.getItem() == Items.PRISMARINE_CRYSTALS) {
+					currencyToBeGiven += item.getCount() * 13 * x;
+				}
+
+				// Rarity coefficient: 148
+				if (item.getItem() == Items.REDSTONE) {
+					currencyToBeGiven += item.getCount() * 14 * x;
+				}
+
+				// Rarity coefficient: 160
+				if (item.getItem() == Items.GOLD_INGOT) {
+					currencyToBeGiven += item.getCount() * 16 * x;
+				}
+
+				// Rarity coefficient: 180
+				if (item.getItem() == Items.LAPIS_LAZULI) {
+					currencyToBeGiven += item.getCount() * 18 * x;
+				}
+
+				// Rarity coefficient: 192
+				if (item.getItem() == Items.ENDER_PEARL) {
+					currencyToBeGiven += item.getCount() * 19 * x;
+				}
+
+				// Rarity coefficient: 200
+				if (item.getItem() == Items.HEART_OF_THE_SEA) {
+					currencyToBeGiven += item.getCount() * 20 * x;
+				}
+
+				// Rarity coefficient: 231
+				if (item.getItem() == Items.POISONOUS_POTATO) {
+					currencyToBeGiven += item.getCount() * 23 * x;
+				}
+
+				// Rarity coefficient: 239
+				if (item.getItem() == Items.NAME_TAG) {
+					currencyToBeGiven += item.getCount() * 23 * x;
+				}
+
+				// Rarity coefficient: 250
 				if (item.getItem() == Items.DIAMOND) {
-					currencyToBeGiven += item.getCount() * 10;
+					currencyToBeGiven += item.getCount() * 25 * x;
+				}
+
+				// Rarity coefficient: 252
+				if (item.getItem() == Items.SADDLE) {
+					currencyToBeGiven += item.getCount() * 25 * x;
+				}
+
+				// Rarity coefficient: 300
+				if (item.getItem() == Items.SADDLE) {
+					currencyToBeGiven += item.getCount() * 30 * x;
+				}
+
+				// Rarity coefficient: 325
+				if (item.getItem() == Items.ENDER_EYE) {
+					currencyToBeGiven += item.getCount() * 32 * x;
+				}
+
+				// Rarity coefficient: 330
+				if (item.getItem() == Items.GHAST_TEAR) {
+					currencyToBeGiven += item.getCount() * 33 * x;
+				}
+
+				// Rarity coefficient: 370
+				if (item.getItem() == Items.BLAZE_ROD) {
+					currencyToBeGiven += item.getCount() * 37 * x;
+				}
+
+				// Rarity coefficient: 390
+				if (item.getItem() == Items.PHANTOM_MEMBRANE) {
+					currencyToBeGiven += item.getCount() * 39 * x;
+				}
+
+				// Rarity coefficient: 400
+				if (item.getItem() == Items.WITHER_SKELETON_SKULL) {
+					currencyToBeGiven += item.getCount() * 40 * x;
+				}
+
+				// Rarity coefficient: 540
+				if (item.getItem() == Items.EMERALD) {
+					currencyToBeGiven += item.getCount() * 54 * x;
+				}
+
+				// Rarity coefficient: 550
+				if (item.getItem() == Items.ENCHANTED_GOLDEN_APPLE) {
+					currencyToBeGiven += item.getCount() * 55 * x;
+				}
+
+				// Rarity coefficient: 680
+				if (item.getItem() == Items.END_CRYSTAL) {
+					currencyToBeGiven += item.getCount() * 68 * x;
+				}
+
+				// Rarity coefficient: 550
+				if (item.getItem() == Items.ENCHANTED_GOLDEN_APPLE) {
+					currencyToBeGiven += item.getCount() * 55 * x;
+				}
+
+				// Rarity coefficient: 1000
+				if (item.getItem() == Items.NETHER_STAR) {
+					currencyToBeGiven += item.getCount() * 100 * x;
+				}
+
+				// Rarity coefficient: 1350
+				if (item.getItem() == Items.DRAGON_BREATH) {
+					currencyToBeGiven += item.getCount() * 135 * x;
+				}
+
+				// Rarity coefficient: 1370
+				if (item.getItem() == Items.LINGERING_POTION) {
+					currencyToBeGiven += item.getCount() * 137 * x;
+				}
+
+				// Rarity coefficient: 1600
+				if (item.getItem() == Items.DRAGON_EGG) {
+					currencyToBeGiven += item.getCount() * 160 * x;
+				}
+
+				// Rarity coefficient: 1660
+				if (item.getItem() == Items.ELYTRA) {
+					currencyToBeGiven += item.getCount() * 166 * x;
 				}
 
 				pEntity.itemHandler.setStackInSlot(i, new ItemStack(Items.AIR));
 			}
 
-			ModMessages.sendToServer(new CurrencyManagementC2SPacket(currencyToBeGiven));
+			if (currencyToBeGiven != 0) {
+				ModMessages.sendToServer(new CurrencyManagementC2SPacket(currencyToBeGiven));
+			}
+
 			BankVaultBlockEntity.isGuiWasClosed = false;
 
 		}

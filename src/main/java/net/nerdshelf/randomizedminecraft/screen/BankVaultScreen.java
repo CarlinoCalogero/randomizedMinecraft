@@ -66,9 +66,7 @@ public class BankVaultScreen extends AbstractContainerScreen<BankVaultMenu> {
 
 	@Override
 	public void onClose() {
-		// TODO Auto-generated method stub
 		super.onClose();
-		System.out.println("GUI CLOSED");
 		this.menu.blockEntity.giveCurrency(this.menu.blockEntity);
 	}
 
