@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.nerdshelf.randomizedminecraft.block.ModBlocks;
-import net.nerdshelf.randomizedminecraft.block.entity.BankVaultBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.BankVaultBlockEntity;
 
 public class BankVaultMenu extends AbstractContainerMenu {
 

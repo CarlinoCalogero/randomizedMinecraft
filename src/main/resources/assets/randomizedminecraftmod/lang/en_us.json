@@ -8,6 +8,7 @@
   "block.randomizedminecraftmod.currency_furnace": "Currency Furnace",
   "block.randomizedminecraftmod.currency_blast_furnace": "Currency Blast Furnace",
   "block.randomizedminecraftmod.currency_smoker": "Currency Smoker",
+  "block.randomizedminecraftmod.currency_enchanting_table": "Currency Enchanting Table",
 
   "entity.minecraft.villager.randomizedminecraftmod.jumpy_master": "Jumpy Master",
 
@@ -15,6 +16,11 @@
   
   "randomizedminecraftmod.container.repair": "Repair & Name",
   "randomizedminecraftmod.container.repair.cost": "Commission Cost: %1$s",
+  
+  "randomizedminecraftmod.container.enchant": "Enchant",
+  "randomizedminecraftmod.container.enchant.currency.one": "1 Enchantment Level",
+  "randomizedminecraftmod.container.enchant.currency.many": "%s Enchantment Levels",
+  "randomizedminecraftmod.container.enchant.currency.requirement": "Currency Requirement: %s",
   
   "randomizedminecraftmod.container.vault": "Bank Vault",
 

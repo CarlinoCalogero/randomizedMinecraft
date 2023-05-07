@@ -28,6 +28,9 @@ public class ModMenuTypes {
 
 	public static final RegistryObject<MenuType<BankVaultMenu>> BANK_VAULT_MENU = registerMenuType(BankVaultMenu::new,
 			"bank_vault_menu");
+	
+	public static final RegistryObject<MenuType<CurrencyEnchantmentMenu>> ENCHANTMENT_MENU = registerMenuType(CurrencyEnchantmentMenu::new,
+			"enchantment_menu");
 
 	private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(
 			IContainerFactory<T> factory, String name) {

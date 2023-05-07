@@ -28,8 +28,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
-import net.nerdshelf.randomizedminecraft.block.entity.CurrencyAnvilBlockEntity;
 import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencyAnvilBlockEntity;
 
 public class CurrencyAnvilBlock extends BaseEntityBlock {
 

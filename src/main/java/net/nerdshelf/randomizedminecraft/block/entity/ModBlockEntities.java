@@ -7,6 +7,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.nerdshelf.randomizedminecraft.RandomizedMinecraftMod;
 import net.nerdshelf.randomizedminecraft.block.ModBlocks;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.BankVaultBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencyAnvilBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencyBlastFurnaceBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencyEnchantmentTableBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencyFurnaceBlockEntity;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencySmokerBlockEntity;
 
 public class ModBlockEntities {
 	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister
@@ -31,6 +37,12 @@ public class ModBlockEntities {
 	public static final RegistryObject<BlockEntityType<BankVaultBlockEntity>> BANK_VAULT = BLOCK_ENTITIES.register(
 			"bank_vault",
 			() -> BlockEntityType.Builder.of(BankVaultBlockEntity::new, ModBlocks.BANK_VAULT.get()).build(null));
+
+	public static final RegistryObject<BlockEntityType<CurrencyEnchantmentTableBlockEntity>> CURRENCY_ENCHANTING_TABLE = BLOCK_ENTITIES
+			.register("currency_enchanting_table",
+					() -> BlockEntityType.Builder
+							.of(CurrencyEnchantmentTableBlockEntity::new, ModBlocks.CURRENCY_ENCHANTING_TABLE.get())
+							.build(null));
 
 	public static void register(IEventBus eventBus) {
 		BLOCK_ENTITIES.register(eventBus);

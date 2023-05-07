@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.nerdshelf.randomizedminecraft.block.entity.CurrencySmokerBlockEntity;
 import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.CurrencySmokerBlockEntity;
 
 public class CurrencySmokerBlock extends AbstractCurrencyFurnaceBlock {
 	public CurrencySmokerBlock(BlockBehaviour.Properties p_56439_) {

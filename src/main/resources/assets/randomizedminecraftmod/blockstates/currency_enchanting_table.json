@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "randomizedminecraftmod:block/currency_enchanting_table"
+    }
+  }
+}

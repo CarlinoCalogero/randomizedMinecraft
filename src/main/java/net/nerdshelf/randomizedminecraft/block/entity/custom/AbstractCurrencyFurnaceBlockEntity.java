@@ -1,4 +1,4 @@
-package net.nerdshelf.randomizedminecraft.block.entity;
+package net.nerdshelf.randomizedminecraft.block.entity.custom;
 
 import java.util.List;
 import java.util.Map;

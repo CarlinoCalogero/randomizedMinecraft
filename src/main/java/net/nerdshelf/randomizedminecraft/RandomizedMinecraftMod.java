@@ -1,6 +1,7 @@
 package net.nerdshelf.randomizedminecraft;
 
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -11,11 +12,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.nerdshelf.randomizedminecraft.block.ModBlocks;
 import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
+import net.nerdshelf.randomizedminecraft.block.entity.client.CurrencyEnchantTableRenderer;
 import net.nerdshelf.randomizedminecraft.item.ModItems;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 import net.nerdshelf.randomizedminecraft.screen.BankVaultScreen;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyAnvilScreen;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyBlastFurnaceScreen;
+import net.nerdshelf.randomizedminecraft.screen.CurrencyEnchantmentScreen;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyFurnaceScreen;
 import net.nerdshelf.randomizedminecraft.screen.CurrencySmokerScreen;
 import net.nerdshelf.randomizedminecraft.screen.ModMenuTypes;
@@ -76,6 +79,10 @@ public class RandomizedMinecraftMod {
 			MenuScreens.register(ModMenuTypes.CURRENCY_BLAST_FURNACE_MENU.get(), CurrencyBlastFurnaceScreen::new);
 			MenuScreens.register(ModMenuTypes.CURRENCY_SMOKER_MENU.get(), CurrencySmokerScreen::new);
 			MenuScreens.register(ModMenuTypes.BANK_VAULT_MENU.get(), BankVaultScreen::new);
+			MenuScreens.register(ModMenuTypes.ENCHANTMENT_MENU.get(), CurrencyEnchantmentScreen::new);
+
+			BlockEntityRenderers.register(ModBlockEntities.CURRENCY_ENCHANTING_TABLE.get(),
+					CurrencyEnchantTableRenderer::new);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package net.nerdshelf.randomizedminecraft.block.entity;
+package net.nerdshelf.randomizedminecraft.block.entity.custom;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
 import net.nerdshelf.randomizedminecraft.screen.CurrencyFurnaceMenu;
 
 public class CurrencyFurnaceBlockEntity extends AbstractCurrencyFurnaceBlockEntity {

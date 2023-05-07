@@ -23,8 +23,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
-import net.nerdshelf.randomizedminecraft.block.entity.BankVaultBlockEntity;
 import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
+import net.nerdshelf.randomizedminecraft.block.entity.custom.BankVaultBlockEntity;
 
 public class BankVaultBlock extends BaseEntityBlock {
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;

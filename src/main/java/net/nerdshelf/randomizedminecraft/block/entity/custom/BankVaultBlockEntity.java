@@ -1,4 +1,4 @@
-package net.nerdshelf.randomizedminecraft.block.entity;
+package net.nerdshelf.randomizedminecraft.block.entity.custom;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.nerdshelf.randomizedminecraft.block.entity.ModBlockEntities;
 import net.nerdshelf.randomizedminecraft.networking.ModMessages;
 import net.nerdshelf.randomizedminecraft.networking.packet.CurrencyManagementC2SPacket;
 import net.nerdshelf.randomizedminecraft.screen.BankVaultMenu;

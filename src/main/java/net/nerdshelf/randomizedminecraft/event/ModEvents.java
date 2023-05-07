@@ -782,6 +782,7 @@ public class ModEvents {
 								populator.accept(ModBlocks.CURRENCY_BLAST_FURNACE.get());
 								populator.accept(ModBlocks.CURRENCY_SMOKER.get());
 								populator.accept(ModBlocks.BANK_VAULT.get());
+								populator.accept(ModBlocks.CURRENCY_ENCHANTING_TABLE.get());
 							}));
 		}
 
